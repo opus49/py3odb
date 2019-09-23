@@ -30,7 +30,7 @@ class Cursor:
             if parameter is None:
                 retcode = odbql.odbql_bind_null(self._stmt, index)
             elif isinstance(parameter, str):
-                encoded_parameter = str.encode("UTF-8")
+                encoded_parameter = parameter[:8].encode("UTF-8")
                 retcode = odbql.odbql_bind_text(
                     self._stmt,
                     index,
@@ -66,7 +66,7 @@ class Cursor:
         elif self._types[index] == odbql.ODBQL_INTEGER:
             return odbql.odbql_value_int(raw_value)
         elif self._types[index] == odbql.ODBQL_TEXT:
-            return odbql.odbql_column_text(self._stmt, index).decode("UTF-8")
+            return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
         elif self._types[index] == odbql.ODBQL_BITFIELD:
             return odbql.odbql_value_int(raw_value)
         return None
@@ -92,6 +92,8 @@ class Cursor:
             raise OperationalError("The cursor is closed.")
         if not operation.endswith(';'):
             operation += ';'
+        if self._stmt is not None:
+            self.finalize()
         self._stmt = ctypes.c_void_p(0)
         tail = ctypes.c_char_p(0)
         retcode = odbql.odbql_prepare_v2(
@@ -167,9 +169,14 @@ class Cursor:
         self._prepare_statement(operation)
         for parameters in seq_of_parameters:
             self._bind_parameters(parameters)
-        self._populate_metadata()
 
     def fetchone(self):
+        """
+        Fetch the next row of a query result set, returning a single sequence,
+        or None when no more data is available.  A ProgrammingError is raised
+        if the previous call to execute did not produce any result set or no
+        call was issued yet.
+        """
         if self._stmt is None:
             raise ProgrammingError("You must execute a statement first.")
         retcode = odbql.odbql_step(self._stmt)
@@ -180,8 +187,21 @@ class Cursor:
         return [self._get_column(index) for index in range(self._column_count)]
 
     def fetchmany(self, size=None):
+        """
+        Fetch the next set of rows of a query result, returning a sequence
+        of sequences (e.g. a list of tuples).  An empty sequence is returned
+        when no more rows are available.
+        """
         if size is None:
             size = self.arraysize
+        rows = []
+        for _ in range(size):
+            row = self.fetchone()
+            if row:  # both not empty and not None
+                rows.append(row)
+            else:
+                break
+        return rows if rows else None
 
     def fetchall(self):
         pass
