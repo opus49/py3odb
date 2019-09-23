@@ -4,7 +4,7 @@ import ctypes
 from warnings import warn
 
 import py3odb.odbql as odbql
-from .error import OperationalError, ProgrammingError, NotSupportedError
+from .error import OperationalError, ProgrammingError
 
 
 class Cursor:
@@ -15,15 +15,28 @@ class Cursor:
     def __init__(self, connection):
         self.arraysize = 1  # number of rows to fetch at a time with fetchmany
         self._closed = False
-        self._column_count = 0
         self._connection = connection
-        self._description = None
         self._stmt = None
-        self._names = []
-        self._types = []
+        self._metadata = {
+            "count": 0,
+            "description": None,
+            "names": (),
+            "types": ()
+        }
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        row = self.fetchone()
+        if row is None:
+            raise StopIteration
+        return row
 
     def _bind_parameters(self, parameters):
-        """Bind parameters to an SQL statement"""
+        """
+        Bind a sequence of parameters to an SQL statement.
+        """
         if self._stmt is None:
             raise OperationalError("There is no prepared statement.")
         for index, parameter in enumerate(parameters):
@@ -54,38 +67,56 @@ class Cursor:
 
     @staticmethod
     def _column_info(name, type_):
+        """
+        Shorthand method for filling out the 7-item description tuples.
+        """
         return (name, type_, None, None, None, None, True)
 
     def _get_column(self, index):
-        """Get the column value for the current row at the given index."""
+        """
+        Get the column value for the current row at the given index.
+        """
         raw_value = odbql.odbql_column_value(self._stmt, index)
         if not raw_value:
             return None
-        if self._types[index] == odbql.ODBQL_FLOAT:
+        if self._metadata["types"][index] == odbql.ODBQL_FLOAT:
             return odbql.odbql_value_double(raw_value)
-        elif self._types[index] == odbql.ODBQL_INTEGER:
+        elif self._metadata["types"][index] == odbql.ODBQL_INTEGER:
             return odbql.odbql_value_int(raw_value)
-        elif self._types[index] == odbql.ODBQL_TEXT:
+        elif self._metadata["types"][index] == odbql.ODBQL_TEXT:
             return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
-        elif self._types[index] == odbql.ODBQL_BITFIELD:
+        elif self._metadata["types"][index] == odbql.ODBQL_BITFIELD:
             return odbql.odbql_value_int(raw_value)
         return None
 
     def _populate_metadata(self):
-        """Generate the description for the most recent column results."""
-        self._column_count = odbql.odbql_column_count(self._stmt)
-        self._names = []
-        self._types = []
-        for index in range(self._column_count):
-            self._names.append(odbql.odbql_column_name(self._stmt, index).decode("UTF-8"))
-            self._types.append(odbql.odbql_column_type(self._stmt, index))
-        if self._names and self._types:
-            self._description = list(map(self._column_info, self._names, self._types))
+        """
+        Generate the metadata for the most recent column results.
+        """
+        self._metadata["count"] = odbql.odbql_column_count(self._stmt)
+        self._metadata["names"] = tuple(
+            [
+                odbql.odbql_column_name(self._stmt, index).decode("UTF-8")
+                for index in range(self._metadata["count"])
+            ]
+        )
+        self._metadata["types"] = tuple(
+            [
+                odbql.odbql_column_type(self._stmt, index)
+                for index in range(self._metadata["count"])
+            ]
+        )
+        if self._metadata["names"] and self._metadata["types"]:
+            self._metadata["description"] = tuple(
+                map(self._column_info, self._metadata["names"], self._metadata["types"])
+            )
         else:
-            self._description = None
+            self._metadata["description"] = None
 
     def _prepare_statement(self, operation):
-        """Prepare a database operation."""
+        """
+        Prepare a database operation.
+        """
         if not self._connection.is_connected:
             raise OperationalError("The database is not connected.")
         if self._closed:
@@ -111,7 +142,7 @@ class Cursor:
     def description(self):
         """
         Read-only attribute that is a sequence of 7-item sequences.  This class
-        uses a list of tuples to describe column results.  The tuple elements
+        uses a tuple of tuples to describe column results.  The tuple elements
         will correspond to the following items:
             name
             type_code
@@ -127,9 +158,9 @@ class Cursor:
         This attribute will be None for operations that do not return rows or
         if the cursor has not had an operation invoked in the execute method.
 
-        The type_code can be interpreted by comparing it to the Type object.
+        The type_code can be interpreted by comparing it to the Type Objects.
         """
-        return self._description
+        return self._metadata["description"]
 
     @property
     def rowcount(self):
@@ -138,7 +169,7 @@ class Cursor:
         produced.  The attribute is -1 in case no execute has been performed on
         the cursor or the rowcount of the last operation cannot be determined.
         """
-        raise NotSupportedError("rowcount is not supported by ODBQL")
+        return -1
 
     def close(self):
         """
@@ -146,7 +177,7 @@ class Cursor:
         forward and an exception will be raised if any operation is attempted.
         """
         self.finalize()
-        self._closed = True  # TODO - do more garbage collection?
+        self._closed = True
 
     def execute(self, operation, parameters=None):
         """
@@ -184,7 +215,7 @@ class Cursor:
             self._populate_metadata()
         if retcode not in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
             return None
-        return [self._get_column(index) for index in range(self._column_count)]
+        return tuple([self._get_column(index) for index in range(self._metadata["count"])])
 
     def fetchmany(self, size=None):
         """
@@ -204,21 +235,38 @@ class Cursor:
         return rows if rows else None
 
     def fetchall(self):
-        pass
+        """
+        Fetch all (remaining) rows of a query result, returning them as a sequence
+        of sequences (i.e. a list of tuples).
+        """
+        results = []
+        while True:
+            row = self.fetchone()
+            if row is None:
+                break
+            results.append(row)
+        return results if results else None
 
     def finalize(self):
-        """Destroy the preapred statement object."""
+        """
+        Destroy the preapred statement object.
+        """
         if self._stmt is not None:
             retcode = odbql.odbql_finalize(self._stmt)
             if retcode != odbql.ODBQL_OK:
                 warn("Unable to finalize statement", RuntimeWarning)
             self._stmt = None
 
-    def nextset(self):
-        pass
-
     def setinputsizes(self, sizes):
+        """
+        Per PEP 249:  Implementations are free to have this method do
+                      nothing and users are free to not use it.
+        """
         pass
 
     def setoutputsize(self, ):
+        """
+        Per PEP 249:  Implementations are free to have this method do
+                      nothing and users are free to not use it.
+        """
         pass
