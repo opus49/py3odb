@@ -1,5 +1,5 @@
 """
-Custom exception classes for ODB
+Custom Exception classes for ODB
 https://www.python.org/dev/peps/pep-0249/#exceptions
 """
 
