@@ -6,7 +6,7 @@ dist: bionic
 env:
  - LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
 before_install:
- - sudo apt-get install -y python3-odb-api
+ - sudo apt-get install -y libodb-api-0d
 install:
  - pip install -r requirements.txt
 script:
