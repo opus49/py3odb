@@ -5,7 +5,7 @@ import ctypes
 
 # load the library
 try:
-    _ODBQL = ctypes.CDLL("libOdb.so")
+    _ODBQL = ctypes.CDLL("libOdb.so.0d")
     _ODBQL.odbql_column_name.restype = ctypes.c_char_p
     _ODBQL.odbql_column_text.restype = ctypes.c_char_p
     _ODBQL.odbql_errmsg.restype = ctypes.c_char_p
