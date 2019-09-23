@@ -1,6 +1,7 @@
 """Cursor object"""
 
 import ctypes
+from warnings import warn
 
 import py3odb.odbql as odbql
 from .error import OperationalError, ProgrammingError, NotSupportedError
@@ -142,8 +143,7 @@ class Cursor:
         Close the cursor now.  The cursor will be unusable from this point
         forward and an exception will be raised if any operation is attempted.
         """
-        if self._stmt is not None:
-            retcode = odbql.odbql_finalize(self._stmt)
+        self.finalize()
         self._closed = True  # TODO - do more garbage collection?
 
     def execute(self, operation, parameters=None):
@@ -175,7 +175,7 @@ class Cursor:
         retcode = odbql.odbql_step(self._stmt)
         if retcode == odbql.ODBQL_METADATA_CHANGED or self.description is None:
             self._populate_metadata()
-        if not retcode in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
+        if retcode not in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
             return None
         return [self._get_column(index) for index in range(self._column_count)]
 
@@ -185,6 +185,14 @@ class Cursor:
 
     def fetchall(self):
         pass
+
+    def finalize(self):
+        """Destroy the preapred statement object."""
+        if self._stmt is not None:
+            retcode = odbql.odbql_finalize(self._stmt)
+            if retcode != odbql.ODBQL_OK:
+                warn("Unable to finalize statement", RuntimeWarning)
+            self._stmt = None
 
     def nextset(self):
         pass
