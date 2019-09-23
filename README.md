@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/opus49/py3odb.svg?branch=master)](https://travis-ci.org/opus49/py3odb)
+[![Coverage Status](https://coveralls.io/repos/github/opus49/py3odb/badge.svg?branch=master)](https://coveralls.io/github/opus49/py3odb?branch=master)
+
 # py3odb
 Python 3.6+ compatible interface to ECMWF's ODB API
-
 
 ## Installation
 TBD
