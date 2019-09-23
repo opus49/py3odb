@@ -1,4 +1,6 @@
-"""Module for Python API to ODB"""
+"""
+Python 3.6+ compatible interface to ECMWF's ODB API
+"""
 
 from .connection import connect, Connection
 from .error import (
