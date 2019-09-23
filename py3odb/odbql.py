@@ -61,8 +61,7 @@ def odbql_bind_null(*args):
 def odbql_bind_text(*args):
     """
     Bind string values to prepared statements.
-    ODBQL_API int odbql_bind_text(
-        odbql_stmt*, int, const char*, int, void(*), (void*))
+    ODBQL_API int odbql_bind_text(odbql_stmt*, int, const char*, int, void(*), (void*))
     """
     return _ODBQL.odbql_bind_text(*args)
 
