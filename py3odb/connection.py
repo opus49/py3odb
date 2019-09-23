@@ -5,7 +5,7 @@ from warnings import warn
 
 import py3odb.odbql as odbql
 from .cursor import Cursor
-from .error import InterfaceError, OperationalError
+from .error import InterfaceError, OperationalError, NotSupportedError
 
 
 def connect(parameters):
@@ -21,6 +21,7 @@ class Connection:
     def __init__(self, dsn):
         self._database = self._open(dsn)
         self._connected = True
+        self._cursors = []
 
     @staticmethod
     def _open(dsn):
@@ -38,6 +39,8 @@ class Connection:
 
     def close(self):
         """Close the connection now."""
+        while self._cursors:
+            self._cursors.pop().close()
         retcode = odbql.odbql_close(self._database)
         if retcode == odbql.ODBQL_OK:
             self._connected = False
@@ -48,19 +51,22 @@ class Connection:
 
     def commit(self):
         """Commit any pending transaction to the database."""
-        pass
+        for cur in self._cursors:
+            cur.finalize()
 
     @property
     def database(self):
         """Reference to the underlying odbql database object."""
         return self._database
 
-    def rollback(self):
+    @staticmethod
+    def rollback():
         """Roll back to the start of any pending transaction."""
-        pass
+        raise NotSupportedError("py3odb does not support rollback")
 
     def cursor(self):
         """Return a new Cursor object using the connection."""
         if self._connected:
-            return Cursor(self)
+            self._cursors.append(Cursor(self))
+            return self._cursors[-1]
         raise OperationalError("The database connection is closed.")
