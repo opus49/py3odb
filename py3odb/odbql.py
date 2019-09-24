@@ -180,6 +180,6 @@ def odbql_value_double(*args):
 def odbql_value_int(*args):
     """
     Converts an odbql_value object into an integer.
-    ODBQL_API double odbql_value_int(odbql_value*);
+    ODBQL_API int odbql_value_int(odbql_value*);
     """
     return _ODBQL.odbql_value_int(*args)
