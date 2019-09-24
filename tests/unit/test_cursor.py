@@ -133,7 +133,7 @@ def test_execute_prep_failure(cursor, tmpdir, monkeypatch):
         return py3odb.odbql.ODBQL_ERROR
 
     def mock_odbql_errmsg(*args):  # pylint: disable=missing-docstring,unused-argument
-        return(b"")
+        return b""
     monkeypatch.setattr("py3odb.odbql.odbql_prepare_v2", mock_odbql_prep)
     monkeypatch.setattr("py3odb.odbql.odbql_errmsg", mock_odbql_errmsg)
     db_file = tmpdir.join("invalid_bind.odb")
