@@ -5,7 +5,7 @@ env:
  - LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
 dist: bionic
 before_install:
- - sudo apt-get install -y libodb-api-dev
+ - sudo apt-get install -y python3-odb-api
 install:
  - pip install -r requirements.txt
  - pip install pytest-cov

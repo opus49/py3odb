@@ -10,7 +10,6 @@ if _LIB is None:
 _ODBQL = ctypes.CDLL(_LIB)
 _ODBQL.odbql_column_name.restype = ctypes.c_char_p
 _ODBQL.odbql_column_text.restype = ctypes.c_char_p
-_ODBQL.odbql_column_value.restype = ctypes.c_void_p
 _ODBQL.odbql_errmsg.restype = ctypes.c_char_p
 _ODBQL.odbql_value_double.restype = ctypes.c_double
 
