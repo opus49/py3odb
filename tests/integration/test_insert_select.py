@@ -10,8 +10,8 @@ TEST_DATA = (
 )
 
 
-def test_read_with_null(tmpdir):
-    """Create a database with NULL values and then read from it."""
+def test_insert_select(tmpdir):
+    """Create a database and then read from it."""
     db_file = tmpdir.join("temp.odb")
 
     # create a database
