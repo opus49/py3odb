@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/opus49/py3odb.svg?branch=master)](https://travis-ci.org/opus49/py3odb)
-[![Coverage Status](https://coveralls.io/repos/github/opus49/py3odb/badge.svg?branch=master)](https://coveralls.io/github/opus49/py3odb?branch=master)
+[![CircleCI](https://circleci.com/gh/opus49/py3odb.svg?style=svg)](https://circleci.com/gh/opus49/py3odb)
+[![codecov](https://codecov.io/gh/opus49/py3odb/branch/master/graph/badge.svg)](https://codecov.io/gh/opus49/py3odb)
 [![PyPI version](https://badge.fury.io/py/py3odb.svg)](https://badge.fury.io/py/py3odb)
 
 # py3odb
