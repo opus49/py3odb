@@ -1,18 +1,17 @@
 """Use ctypes to load libOdb.so and access symbols"""
 
 import ctypes
+from ctypes.util import find_library
 
 
-# load the library
-try:
-    _ODBQL = ctypes.CDLL("libOdb.so.0d")
-    _ODBQL.odbql_column_name.restype = ctypes.c_char_p
-    _ODBQL.odbql_column_text.restype = ctypes.c_char_p
-    _ODBQL.odbql_errmsg.restype = ctypes.c_char_p
-    _ODBQL.odbql_value_double.restype = ctypes.c_double
-except OSError:
-    print("Could not load libOdb.so.  Make sure it's in your LD_LIBRARY_PATH.")
-    raise SystemExit(1)
+_LIB = find_library("Odb")
+if _LIB is None:
+    raise OSError("Could not find libOdb.  Try updating your LD_LIBRARY_PATH.")
+_ODBQL = ctypes.CDLL(_LIB)
+_ODBQL.odbql_column_name.restype = ctypes.c_char_p
+_ODBQL.odbql_column_text.restype = ctypes.c_char_p
+_ODBQL.odbql_errmsg.restype = ctypes.c_char_p
+_ODBQL.odbql_value_double.restype = ctypes.c_double
 
 
 # globals
