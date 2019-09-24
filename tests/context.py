@@ -1,4 +1,4 @@
-"""Import to add parent directory to PYTHONPATH"""
+"""Import to add project directory to PYTHONPATH"""
 import pathlib
 import sys
 

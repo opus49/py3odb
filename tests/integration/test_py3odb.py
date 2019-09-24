@@ -1,6 +1,6 @@
-"""Tests for connection module"""
+"""Integration tests for the py3odb module."""
 import pytest
-from .context import py3odb
+from ..context import py3odb
 
 TEST_DATA = (
     (0, 1.2, 'apple'),
@@ -9,7 +9,7 @@ TEST_DATA = (
 )
 
 
-def test_end_to_end(tmpdir):
+def test_database(tmpdir):
     """Create a database and then read from it."""
     db_file = tmpdir.join("test.odb")
     conn = py3odb.connect("")
