@@ -74,11 +74,7 @@ class Cursor:
         """
         Get the column value for the current row at the given index.
         """
-        print(f"getting raw_value for index {index}")
         raw_value = odbql.odbql_column_value(self._stmt, index)
-        print(f"raw_value type is {type(raw_value)}")
-        print(f"raw value is {raw_value}")
-        print("column data type is {}".format(self._metadata["types"][index]))
         if not raw_value:
             return None
         if self._metadata["types"][index] == odbql.ODBQL_FLOAT:
