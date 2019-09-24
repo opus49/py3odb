@@ -5,7 +5,7 @@ with open("README.md") as fh_in:
 
 setup(
     name="py3odb",
-    version="0.0.2",
+    version="0.0.3",
     description="Python 3.6+ compatible interface to ECMWF's ODB API",
     long_description=README,
     long_description_content_type="text/markdown",
