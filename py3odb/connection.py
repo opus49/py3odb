@@ -49,10 +49,10 @@ class Connection:
         else:
             warn("Unable to close database", RuntimeWarning)
 
-    def commit(self):
+    @staticmethod
+    def commit():
         """Commit any pending transaction to the database."""
-        for cur in self._cursors:
-            cur.finalize()
+        raise NotSupportedError("py3odb does not support transactions.")
 
     @property
     def database(self):
