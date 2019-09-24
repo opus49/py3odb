@@ -1,7 +1,6 @@
 language: python
 python:
  - "3.6"
-dist: bionic
 env:
  - LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
 before_install:
