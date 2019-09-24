@@ -24,24 +24,19 @@ jobs:
             pip install -r requirements.txt
             pip install pytest-cov
             pip install pytest-flake8
-            pip install coveralls
+            pip install codecov
 
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest -s --flake8 --cov=py3odb
-            coveralls
+            pytest --flake8 --cov=py3odb
+            codecov
 
       - store_artifacts:
           path: test-reports
