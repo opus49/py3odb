@@ -5,8 +5,8 @@
 # py3odb
 Python 3.6+ compatible interface to ECMWF's ODB API
 
-## Installation
-TBD
+## Getting Started
+Work in progress...
 
 
 ## Usage
@@ -25,7 +25,6 @@ For now this is a list of things I want to remember:
 * odbql only supports 8 character strings in its TEXT functions
 * only the last INSERT takes for some reason
 * you can't open an existing database and do an insert
-* since there is no real bulk retrieval, does a fetch iterator really make sense?
 
 
 ## Acknowledgments
