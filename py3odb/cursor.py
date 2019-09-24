@@ -4,7 +4,7 @@ import ctypes
 from warnings import warn
 
 import py3odb.odbql as odbql
-from .error import OperationalError, ProgrammingError
+from .error import OperationalError, ProgrammingError, NotSupportedError
 
 
 class Cursor:
@@ -37,8 +37,6 @@ class Cursor:
         """
         Bind a sequence of parameters to an SQL statement.
         """
-        if self._stmt is None:
-            raise OperationalError("There is no prepared statement.")
         for index, parameter in enumerate(parameters):
             if parameter is None:
                 retcode = odbql.odbql_bind_null(self._stmt, index)
@@ -83,11 +81,9 @@ class Cursor:
             return odbql.odbql_value_double(raw_value)
         elif self._metadata["types"][index] == odbql.ODBQL_INTEGER:
             return odbql.odbql_value_int(raw_value)
-        elif self._metadata["types"][index] == odbql.ODBQL_TEXT:
-            return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
         elif self._metadata["types"][index] == odbql.ODBQL_BITFIELD:
             return odbql.odbql_value_int(raw_value)
-        return None
+        return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
 
     def _populate_metadata(self):
         """
@@ -211,8 +207,6 @@ class Cursor:
         if self._stmt is None:
             raise ProgrammingError("You must execute a statement first.")
         retcode = odbql.odbql_step(self._stmt)
-        if retcode == odbql.ODBQL_METADATA_CHANGED or self.description is None:
-            self._populate_metadata()
         if retcode not in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
             return None
         return tuple([self._get_column(index) for index in range(self._metadata["count"])])
@@ -257,16 +251,18 @@ class Cursor:
                 warn("Unable to finalize statement", RuntimeWarning)
             self._stmt = None
 
-    def setinputsizes(self, sizes):
+    @staticmethod
+    def setinputsizes(sizes):  # pylint: disable=unused-argument
         """
         Per PEP 249:  Implementations are free to have this method do
                       nothing and users are free to not use it.
         """
-        pass
+        raise NotSupportedError
 
-    def setoutputsize(self, ):
+    @staticmethod
+    def setoutputsize():
         """
         Per PEP 249:  Implementations are free to have this method do
                       nothing and users are free to not use it.
         """
-        pass
+        raise NotSupportedError
