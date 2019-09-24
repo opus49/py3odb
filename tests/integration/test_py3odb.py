@@ -18,8 +18,8 @@ def test_database(tmpdir):
     conn = py3odb.connect("")
     cur = conn.cursor()
     cur.execute(
-       "CREATE TABLE t_foo AS (a INTEGER, b REAL, c STRING, d BITFIELD) "
-       f"ON '{db_file}'"
+        "CREATE TABLE t_foo AS (a INTEGER, b REAL, c STRING, d BITFIELD) "
+        f"ON '{db_file}'"
     )
     cur.executemany("INSERT INTO t_foo(a,b,c) VALUES(?,?,?)", TEST_DATA)
     conn.close()
