@@ -21,7 +21,7 @@ def test_database(tmpdir):
         "CREATE TABLE t_foo AS (a INTEGER, b REAL, c STRING, d BITFIELD) "
         f"ON '{db_file}'"
     )
-    cur.executemany("INSERT INTO t_foo(a,b,c) VALUES(?,?,?)", TEST_DATA)
+    cur.executemany("INSERT INTO t_foo(a,b,c,d) VALUES(?,?,?,?)", TEST_DATA)
     conn.close()
 
     # read from it
