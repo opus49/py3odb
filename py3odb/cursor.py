@@ -243,7 +243,7 @@ class Cursor:
 
     def finalize(self):
         """
-        Destroy the preapred statement object.
+        Destroy the prepared statement object.
         """
         if self._stmt is not None:
             retcode = odbql.odbql_finalize(self._stmt)
