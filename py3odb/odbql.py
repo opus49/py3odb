@@ -66,14 +66,6 @@ def odbql_bind_text(*args):
     return _ODBQL.odbql_bind_text(*args)
 
 
-def odbql_clear_bindings(*args):
-    """
-    Reset all bindings on a prepared statement to NULL.
-    ODBQL_API int odbql_clear_bindings(odbql_stmt*);
-    """
-    return _ODBQL.odbql_clear_bindings(*args)
-
-
 def odbql_close(*args):
     """
     Destroys odbql object.
@@ -162,17 +154,6 @@ def odbql_prepare_v2(*args):
         const char **pzTail   /* OUT: Pointer to unused portion of zSql */
     """
     return _ODBQL.odbql_prepare_v2(*args)
-
-
-def odbql_reset(*args):
-    """
-    Reset a prepared statement object back to its initial state, ready to be
-    re-executed.  Any SQL statement variables that had values bound to them
-    using odbql_bind_*() retain their values.  Use odbql_clear_bindings() to
-    reset the bindings.
-    ODBQL_API int odbql_reset(odbql_stmt *pStmt);
-    """
-    return _ODBQL.odbql_reset(*args)
 
 
 def odbql_step(*args):
