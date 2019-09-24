@@ -4,7 +4,7 @@ from ..context import py3odb
 
 
 TEST_DATA = (
-    (0, 1.2, 'apple'),
+    (3, 1.2, 'apple'),
     (9, 3.14159, 'pie'),
     (2, -0.0003, 'longer_than_8_characters')
 )
