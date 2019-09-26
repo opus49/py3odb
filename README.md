@@ -1,7 +1,7 @@
 [![build](https://img.shields.io/circleci/build/github/opus49/py3odb)](https://circleci.com/gh/opus49/py3odb)
 [![codecov](https://img.shields.io/codecov/c/github/opus49/py3odb)](https://codecov.io/gh/opus49/py3odb)
 [![PyPI](https://img.shields.io/pypi/v/py3odb?color=blue)](https://https://pypi.org/project/py3odb/)
-[![Python](https://img.shields.io/pypi/pyversions/py3odb)]
+[![Python](https://img.shields.io/pypi/pyversions/py3odb)](https://www.python.org/downloads/release/python-360/)
 
 
 # py3odb
