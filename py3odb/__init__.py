@@ -2,7 +2,7 @@
 Python 3.6+ compatible interface to ECMWF's ODB API
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 from .connection import connect, Connection
