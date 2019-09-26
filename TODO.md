@@ -5,9 +5,9 @@
 * ~~Write README~~
 * ~~Write unit tests~~
 * ~~Implement packaging support~~
-* Improve README
+* ~~Improve README~~
 * ~~Figure out a better strategy for loading libOdb.so~~
-* Look into callproc
+* ~~Look into callproc~~
 * Look at [Type Objects and Constructors](https://www.python.org/dev/peps/pep-0249/#type-objects-and-constructors)
 * ~~Look into auto-commit~~
-* Add a change log
+* ~~Add a change log~~
