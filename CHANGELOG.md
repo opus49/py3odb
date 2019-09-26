@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.1.1] - 2019-09-26
 
 ### Fixed
-* Fixed typo in README.md PyPI link
+* Fixed PyPI link typo in README.md
 
 
 ## [0.1.0] - 2019-09-26
