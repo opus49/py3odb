@@ -2,6 +2,7 @@
 
 import ctypes
 from ctypes.util import find_library
+from .util import suppress_stdout
 
 
 _LIB = find_library("Odb")
@@ -139,7 +140,8 @@ def odbql_open(*args):
     Creates odbql object.
     ODBQL_API int odbql_open(const char *filename, odbql **ppDb);
     """
-    return _ODBQL.odbql_open(*args)
+    with suppress_stdout():
+        return _ODBQL.odbql_open(*args)
 
 
 def odbql_prepare_v2(*args):
@@ -152,7 +154,8 @@ def odbql_prepare_v2(*args):
         odbql_stmt **ppStmt,  /* OUT: Statement handle */
         const char **pzTail   /* OUT: Pointer to unused portion of zSql */
     """
-    return _ODBQL.odbql_prepare_v2(*args)
+    with suppress_stdout():
+        return _ODBQL.odbql_prepare_v2(*args)
 
 
 def odbql_step(*args):
@@ -166,7 +169,8 @@ def odbql_step(*args):
     may be accessed by using the column access functions.
     ODBQL_API int odbql_step(odbql_stmt*);
     """
-    return _ODBQL.odbql_step(*args)
+    with suppress_stdout():
+        return _ODBQL.odbql_step(*args)
 
 
 def odbql_value_double(*args):
