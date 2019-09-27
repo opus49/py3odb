@@ -6,7 +6,10 @@ import sys
 
 @contextmanager
 def suppress_stdout():
-    """Suppress STDOUT.  Useful for suppressing output from ctypes."""
+    """
+    Suppresses all standard output.  Useful for blocking output from ctypes.
+    See https://stackoverflow.com/a/4178672 for more details.
+    """
     sys.stdout.flush()
     with open(os.devnull, "w") as devnull:
         old_stdout_fileno = os.dup(sys.stdout.fileno())
