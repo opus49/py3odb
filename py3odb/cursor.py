@@ -106,7 +106,11 @@ class Cursor:
         )
         if self._metadata["names"] and self._metadata["types"]:
             self._metadata["description"] = tuple(
-                map(self._column_info, self._metadata["names"], self._metadata["types"])
+                map(
+                    self._column_info,
+                    self._metadata["names"],
+                    [x.value for x in self._metadata["types"]]
+                )
             )
         else:
             self._metadata["description"] = None
