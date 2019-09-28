@@ -4,6 +4,7 @@ import ctypes
 from warnings import warn
 
 import py3odb.odbql as odbql
+from .constants import ColumnType
 from .error import OperationalError, ProgrammingError, NotSupportedError
 from .row import Row
 
@@ -65,11 +66,11 @@ class Cursor:
         odbql.odbql_step(self._stmt)
 
     @staticmethod
-    def _column_info(name, type_):
+    def _column_info(name, column_type):
         """
         Shorthand method for filling out the 7-item description tuples.
         """
-        return (name, type_, None, None, None, None, True)
+        return (name, column_type, None, None, None, None, True)
 
     def _get_column(self, index):
         """
@@ -78,11 +79,11 @@ class Cursor:
         raw_value = odbql.odbql_column_value(self._stmt, index)
         if not raw_value:
             return None
-        if self._metadata["types"][index] == odbql.ODBQL_FLOAT:
+        if self._metadata["types"][index] == ColumnType.FLOAT:
             return odbql.odbql_value_double(raw_value)
-        elif self._metadata["types"][index] == odbql.ODBQL_INTEGER:
+        elif self._metadata["types"][index] == ColumnType.INTEGER:
             return odbql.odbql_value_int(raw_value)
-        elif self._metadata["types"][index] == odbql.ODBQL_BITFIELD:
+        elif self._metadata["types"][index] == ColumnType.BITFIELD:
             return odbql.odbql_value_int(raw_value)
         return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
 
@@ -99,7 +100,7 @@ class Cursor:
         )
         self._metadata["types"] = tuple(
             [
-                odbql.odbql_column_type(self._stmt, index)
+                ColumnType(odbql.odbql_column_type(self._stmt, index))
                 for index in range(self._metadata["count"])
             ]
         )
