@@ -22,5 +22,10 @@ setup(
     ],
     packages=find_packages(),
     python_requires=">=3.6",
-    include_package_data=True
+    include_package_data=True,
+    entry_points={
+        "console_scripts": [
+            "py3odb = py3odb.cli.main:main",
+        ]
+    }
 )
