@@ -35,7 +35,9 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest --flake8 --cov=py3odb
+            pytest tests/unit --flake8 --cov=py3odb
+            codecov
+            pytest tests/integration --flake8 --cov=py3odb
             codecov
 
       - store_artifacts:
