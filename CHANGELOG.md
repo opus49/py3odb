@@ -5,8 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [0.2.0] - Unreleased
+## [0.2] - Unreleased
 ### Added
+* Entry point py3odb with commands: dump, geopoints, and query
+* Row objects (immutable dictionary-like, iterable sequences)
+* Connection objects now have filename attribute
+* Cursor execution operations now support <odb> tag in place of filename
+* Constants submodule with ColumnType enum and Varno static class
+
+### Changed
+* Cursor fetches now return Row objects
+* Cursor metadata now stores column type as ColumnType 
 
 ### Fixed
 * Suppress (by default) STDOUT messages coming from odbql
@@ -17,5 +26,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed PyPI link typo in README.md
 
 
-## [0.1.0] - 2019-09-26
+## [0.1] - 2019-09-26
 * Initial Release
