@@ -4,7 +4,7 @@ from collections.abc import Mapping
 
 
 class Row(Mapping):
-    """An immutable sequence object representing an SQL row."""
+    """An immutable sequence object representing an SQL result row."""
     def __init__(self, *args, **kwargs):
         self.__dict__.update(*args, **kwargs)
 
