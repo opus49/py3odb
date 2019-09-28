@@ -18,3 +18,4 @@ def suppress_stdout():
             yield
         finally:
             os.dup2(old_stdout_fileno, 1)
+            os.close(old_stdout_fileno)
