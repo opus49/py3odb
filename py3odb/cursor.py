@@ -5,6 +5,7 @@ from warnings import warn
 
 import py3odb.odbql as odbql
 from .error import OperationalError, ProgrammingError, NotSupportedError
+from .row import Row
 
 
 class Cursor:
@@ -117,6 +118,7 @@ class Cursor:
             raise OperationalError("The database is not connected.")
         if self._closed:
             raise OperationalError("The cursor is closed.")
+        operation = operation.replace("<odb>", f"'{self._connection.filename}'")
         if not operation.endswith(';'):
             operation += ';'
         if self._stmt is not None:
@@ -202,14 +204,20 @@ class Cursor:
         Fetch the next row of a query result set, returning a single sequence,
         or None when no more data is available.  A ProgrammingError is raised
         if the previous call to execute did not produce any result set or no
-        call was issued yet.
+        call was issued yet.  For py3odb, the fetch returns a Row object.
         """
         if self._stmt is None:
             raise ProgrammingError("You must execute a statement first.")
         retcode = odbql.odbql_step(self._stmt)
         if retcode not in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
             return None
-        return tuple([self._get_column(index) for index in range(self._metadata["count"])])
+        row = Row(
+            {
+                self._metadata["names"][index]: self._get_column(index)
+                for index in range(self._metadata["count"])
+            }
+        )
+        return row
 
     def fetchmany(self, size=None):
         """
@@ -222,7 +230,7 @@ class Cursor:
         rows = []
         for _ in range(size):
             row = self.fetchone()
-            if row:  # both not empty and not None
+            if row is not None:
                 rows.append(row)
             else:
                 break
