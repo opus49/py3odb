@@ -1,5 +1,6 @@
 """Module for abstract Command class to support argument parsing."""
 from abc import ABC, abstractmethod
+from argparse import RawTextHelpFormatter
 
 
 class Command(ABC):
@@ -8,7 +9,11 @@ class Command(ABC):
 
     def __init__(self, subparsers):
         self.subparsers = subparsers
-        self.parser = subparsers.add_parser(self.name, description=self.description)
+        self.parser = subparsers.add_parser(
+            self.name,
+            description=self.description,
+            formatter_class=RawTextHelpFormatter
+        )
         self.add_arguments()
         self.parser.set_defaults(command=self.command)
 
