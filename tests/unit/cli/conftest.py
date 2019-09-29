@@ -1,0 +1,104 @@
+"""Used to share fixtures among tests."""
+import pytest
+from ...context import py3odb
+
+
+MOCK_CURSOR_DATA = {
+    "SELECT * FROM <odb>": {
+        "description": (
+            ('lat@hdr', 1, None, None, None, None, None),
+            ('lon@hdr', 1, None, None, None, None, None),
+            ('varno@body', 1, None, None, None, None, None),
+            ('obsvalue@body', 1, None, None, None, None, None)
+        ),
+        "rows": (
+            py3odb.row.Row({"lat": 23.1, "lon": 120.3, "varno": 1, "obsvalue": 3.2}),
+            py3odb.row.Row({"lat": -13.2, "lon": -10.3, "varno": 2, "obsvalue": 7.8}),
+            py3odb.row.Row({"lat": 3.8, "lon": 40.2, "varno": 3, "obsvalue": -1.2})
+        )
+    },
+    "SELECT DISTINCT varno@body FROM <odb>": {
+        "description": (
+            ('varno@body', 1, None, None, None, None, None),
+        ),
+        "rows": (
+            py3odb.row.Row({"varno": 1}),
+            py3odb.row.Row({"varno": 2}),
+            py3odb.row.Row({"varno": 3})
+        )
+    }
+}
+
+
+class MockReader:  # pylint: disable=too-few-public-methods
+    """Mock Reader object."""
+    def __init__(self, sql_command):
+        self._iter_index = 0
+        self._rows = MOCK_CURSOR_DATA[sql_command]["rows"]
+        self._description = MOCK_CURSOR_DATA[sql_command]["description"]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._iter_index >= len(self._rows):
+            raise StopIteration
+        value = self._rows[self._iter_index]
+        self._iter_index += 1
+        return value
+
+    @property
+    def description(self):
+        """Return the mock cursor description."""
+        return self._description
+
+
+@pytest.fixture(name="mock_reader_distinct_varno")
+def mock_reader_distinct_varno_fixture():
+    """Fixture for mocking a Reader object that acts like a SELECT DISTINCT varno query."""
+    return MockReader("SELECT DISTINCT varno FROM <odb>")
+
+
+@pytest.fixture(name="mock_reader_select_all")
+def mock_reader_select_all_fixture():
+    """Fixture for mocking a Reader object that acts like a SELECT * FROM <odb> query."""
+    return MockReader("SELECT * FROM <odb>")
+
+
+@pytest.fixture(name="mock_subparsers")
+def mock_subparsers_fixture():
+    """Fixture for mocking a subparsers object from argparse."""
+    class MockSubparsers:  # pylint: disable=too-few-public-methods
+        """Mock subparsers from argparse."""
+        def __init__(self):
+            self.parsers = []
+
+        def add_parser(self, *args, **kwargs):
+            """Add a parser"""
+            self.parsers.append(MockParser(*args, **kwargs))
+            return self.parsers[-1]
+
+    class MockParser:
+        """Mock parser from argparse."""
+        def __init__(self, *args, **kwargs):
+            self.args = args
+            self.kwargs = kwargs
+            self.arguments = []
+            self.defaults = {}
+
+        def add_argument(self, *args, **kwargs):
+            """Add an argument"""
+            self.arguments.append((args, kwargs))
+
+        def set_defaults(self, **kwargs):
+            """Set a default"""
+            for keyname, value in kwargs.items():
+                self.defaults[keyname] = value
+
+    return MockSubparsers()
