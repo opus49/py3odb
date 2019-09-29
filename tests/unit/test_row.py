@@ -3,8 +3,8 @@ import pytest
 from ..context import py3odb
 
 
-@pytest.fixture
-def test_row():
+@pytest.fixture(name="test_row")
+def test_row_fixture():
     """Set up a test row."""
     test_data = {
         "apples": -49,
@@ -17,9 +17,11 @@ def test_row():
 
 def test_row_immutable():
     """Test that the row is immutable."""
-    test_row = py3odb.row.Row()
+    immutable_row = py3odb.row.Row()
     with pytest.raises(TypeError):
-        test_row["key"] = 0
+        immutable_row["key"] = 0  # pylint: disable=unsupported-assignment-operation
+    with pytest.raises(TypeError):
+        immutable_row[0] = 0  # pylint: disable=unsupported-assignment-operation
 
 
 def test_row_get_item(test_row):
@@ -45,7 +47,7 @@ def test_len(test_row):
     """Test len method."""
     assert len(test_row) == 4
     empty_row = py3odb.row.Row()
-    assert len(empty_row) == 0
+    assert not empty_row
 
 
 def test_iterator(test_row):

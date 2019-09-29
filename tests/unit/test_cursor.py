@@ -1,4 +1,5 @@
 """Tests for connection module"""
+import ctypes
 import pytest
 from ..context import py3odb
 
@@ -12,8 +13,8 @@ def fixture_cursor():
     conn.close()
 
 
-class Fetcher:  # pylint: disable=too-few-public-methods
-    """Object for handling multiple fetches."""
+class MockFetcher:  # pylint: disable=too-few-public-methods
+    """Mock object for handling multiple fetches."""
     def __init__(self, rows_to_fetch):
         self.rows_to_fetch = rows_to_fetch
         self.rows_fetched = 0
@@ -22,8 +23,42 @@ class Fetcher:  # pylint: disable=too-few-public-methods
         """Mock fetch a value."""
         if self.rows_fetched >= self.rows_to_fetch:
             return None
+        if self.rows_fetched == 0:
+            value = 1
+        elif self.rows_fetched == 1:
+            value = "foo"
+        elif self.rows_fetched == 2:
+            value = 3.14159
+        else:
+            value = None
         self.rows_fetched += 1
-        return ("row"),
+        return py3odb.row.Row({"key": value})
+
+
+class MockODBQL:
+    """Mock object for handling odbql calls."""
+    def __init__(self):
+        self.calls = []
+
+    def odbql_bind_null(self, *args):
+        """Mock odbql_bind_null."""
+        self.calls.append(("null", *args))
+        return 0
+
+    def odbql_bind_text(self, *args):
+        """Mock odbql_bind_text."""
+        self.calls.append(("text", *args))
+        return 0
+
+    def odbql_bind_int(self, *args):
+        """Mock odbql_bind_int."""
+        self.calls.append(("int", *args))
+        return 0
+
+    def odbql_bind_double(self, *args):
+        """Mock odbql_bind_double."""
+        self.calls.append(("double", *args))
+        return 0
 
 
 def test_execute_closed_cursor(cursor):
@@ -73,11 +108,15 @@ def test_fetchmany_without_rows(cursor, monkeypatch):
 
 def test_fetchall(cursor, monkeypatch):
     """Test fetchall."""
-    rows_to_fetch = 3
-    fetcher = Fetcher(rows_to_fetch)
+    rows_to_fetch = 4
+    fetcher = MockFetcher(rows_to_fetch)
     monkeypatch.setattr(py3odb.cursor.Cursor, "fetchone", fetcher.fetch)
     rows = cursor.fetchall()
     assert len(rows) == rows_to_fetch
+    assert rows[0][0] == 1
+    assert rows[1]["key"] == "foo"
+    assert rows[2]["key"] == 3.14159
+    assert rows[3]["key"] is None
 
 
 def test_finalize_warning(cursor, monkeypatch):
@@ -139,3 +178,37 @@ def test_execute_prep_failure(cursor, tmpdir, monkeypatch):
     db_file = tmpdir.join("invalid_bind.odb")
     with pytest.raises(py3odb.ProgrammingError):
         cursor.execute(f"CREATE TABLE t_foo AS (x INTEGER) ON '{db_file}'")
+
+
+def test_iteration(cursor, monkeypatch):
+    """Test cursor iteration."""
+    rows_to_fetch = 4
+    fetcher = MockFetcher(rows_to_fetch)
+    monkeypatch.setattr(py3odb.cursor.Cursor, "fetchone", fetcher.fetch)
+    results = []
+    for row in cursor:
+        results.append(row[0])
+    assert len(results) == 4
+    assert results[0] == 1
+    assert results[1] == "foo"
+    assert results[2] == 3.14159
+    assert results[3] is None
+
+
+def test_bind_parameters(cursor, monkeypatch):
+    """Test the inner workings of bind_parameters"""
+    def mock_prepare(*args):  # pylint: disable=missing-docstring,unused-argument
+        pass
+    mock_odbql = MockODBQL()
+    monkeypatch.setattr(py3odb.cursor.Cursor, "_prepare_statement", mock_prepare)
+    monkeypatch.setattr(py3odb.odbql, "odbql_bind_null", mock_odbql.odbql_bind_null)
+    monkeypatch.setattr(py3odb.odbql, "odbql_bind_text", mock_odbql.odbql_bind_text)
+    monkeypatch.setattr(py3odb.odbql, "odbql_bind_int", mock_odbql.odbql_bind_int)
+    monkeypatch.setattr(py3odb.odbql, "odbql_bind_double", mock_odbql.odbql_bind_double)
+    cursor.execute(f"CREATE TABLE t_foo AS (a INTEGER, b REAL, c STRING) ON <odb>")
+    cursor.execute("INSERT INTO t_foo(x) VALUES(?,?,?)", (1, 2.3, 'foo'))
+    assert len(mock_odbql.calls) == 3
+    assert mock_odbql.calls[0] == ('int', None, 0, 1)
+    assert mock_odbql.calls[1][0] == 'double'
+    assert mock_odbql.calls[1][3].value == ctypes.c_double(2.3).value
+    assert mock_odbql.calls[2][0] == 'text'
