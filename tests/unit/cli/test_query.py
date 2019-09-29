@@ -1,5 +1,4 @@
 """Tests for cli/query module."""
-from argparse import Namespace
 import pytest
 from ...context import py3odb
 
