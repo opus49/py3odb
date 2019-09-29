@@ -3,8 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2.1
-orbs:
-  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -39,14 +37,8 @@ jobs:
             . venv/bin/activate
             pytest --flake8 --cov=py3odb --cov-report xml:xmlcov/unit.xml tests/unit
             pytest --flake8 --cov=py3odb --cov-report xml:xmlcov/integration.xml tests/integration
-
-      - codecov/upload:
-          file: xmlcov/unit.xml
-          flags: unittests
-
-      - codecov/upload:
-          file: xmlcov/integration.xml
-          flags: integration
+            codecov -f xmlcov/unit.xml -F unit
+            codecov -f xmlcov/integration.xml -F integration
 
       - store_artifacts:
           path: xmlcov
