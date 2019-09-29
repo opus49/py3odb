@@ -1,5 +1,5 @@
 """Module for the query command."""
-from py3odb import connect
+from py3odb import Reader
 from py3odb.cli import Command
 
 
@@ -35,18 +35,8 @@ Examples:
         main(args)
 
 
-def parse_sql_command(sql_command, filename):
-    """Replace <odb> with filename if applicable."""
-    if "<odb>" in sql_command:
-        sql_command = sql_command.replace("<odb>", f"'{filename}'")
-    return sql_command
-
-
 def main(args):
     """The main function for this script."""
-    conn = connect(args.filename)
-    cur = conn.cursor()
-    cur.execute(parse_sql_command(args.sql_command, args.filename))
-    for row in cur:
-        print(row)
-    conn.close()
+    with Reader(args.filename, args.sql_command) as odb_reader:
+        for row in odb_reader:
+            print(row)
