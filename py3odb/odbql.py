@@ -24,14 +24,6 @@ ODBQL_DONE = 101
 ODBQL_METADATA_CHANGED = 102
 ODBQL_STATIC = ctypes.c_void_p(0)
 
-# data types
-ODBQL_INTEGER = 1
-ODBQL_FLOAT = 2
-ODBQL_TEXT = 3
-ODBQL_BLOB = 4
-ODBQL_NULL = 5
-ODBQL_BITFIELD = 6
-
 
 # functions
 def odbql_bind_double(*args):
