@@ -39,19 +39,19 @@ class DumpCommand(Command):
     def add_arguments(self):
         super().add_arguments()
         self.parser.add_argument(
-            "-c",
+            "-C",
             "--columns",
             help="Print the columns.",
             action="store_true"
         )
         self.parser.add_argument(
-            "-v",
+            "-V",
             "--varno",
             help="Print the varnos.",
             action="store_true"
         )
         self.parser.add_argument(
-            "-vv",
+            "-v",
             "--verbose",
             help="Print full details.",
             action="store_true"
@@ -65,11 +65,13 @@ class DumpCommand(Command):
         """Print the columns from an ODB2 file."""
         columns = self._get_column_data(filename)
         if verbose:
+            print("-" * 51)
             print(f"{'name':40}type")
             print("-" * 51)
             for column_name in sorted(columns):
                 print(f"{column_name:40}{columns[column_name]}")
         else:
+            print("-" * 51)
             print("name")
             print("-" * 51)
             for column_name in sorted(columns):
@@ -79,14 +81,16 @@ class DumpCommand(Command):
         """Print a list of varnos from an ODB2 file."""
         varno_data = self._get_varno_data(filename)
         if verbose:
-            print(f"{'code':19}varno description")
+            print("-" * 80)
+            print(f"{'code':19}varno  description")
             print("-" * 80)
         else:
+            print("-" * 25)
             print(f"{'code':20}varno")
             print("-" * 25)
         for varno, code, desc in varno_data:
             if verbose:
-                print(f"{code:20}{varno:-4} {desc:55}")
+                print(f"{code:20}{varno:-4}  {desc}")
             else:
                 print(f"{code:20}{varno:-4}")
 
