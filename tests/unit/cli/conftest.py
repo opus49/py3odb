@@ -22,9 +22,9 @@ MOCK_CURSOR_DATA = {
             ('varno@body', 1, None, None, None, None, None),
         ),
         "rows": (
-            py3odb.row.Row({"varno": 1}),
-            py3odb.row.Row({"varno": 2}),
-            py3odb.row.Row({"varno": 3})
+            py3odb.row.Row({"varno@body": 1}),
+            py3odb.row.Row({"varno@body": 2}),
+            py3odb.row.Row({"varno@body": 3})
         )
     }
 }
@@ -60,15 +60,21 @@ class MockReader:  # pylint: disable=too-few-public-methods
 
 
 @pytest.fixture(name="mock_reader_distinct_varno")
-def mock_reader_distinct_varno_fixture():
+def mock_reader_distinct_varno_fixture(monkeypatch):
     """Fixture for mocking a Reader object that acts like a SELECT DISTINCT varno query."""
-    return MockReader("SELECT DISTINCT varno FROM <odb>")
+    def mock_reader(*args):
+        """mock reader function"""
+        return MockReader("SELECT DISTINCT varno@body FROM <odb>")
+    monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_reader_select_all")
-def mock_reader_select_all_fixture():
+def mock_reader_select_all_fixture(monkeypatch):
     """Fixture for mocking a Reader object that acts like a SELECT * FROM <odb> query."""
-    return MockReader("SELECT * FROM <odb>")
+    def mock_reader(*args):
+        """mock reader function"""
+        return MockReader("SELECT * FROM <odb>")
+    monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_subparsers")

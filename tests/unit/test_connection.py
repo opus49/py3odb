@@ -31,7 +31,8 @@ def test_close_closes_cursors():
 
 def test_close_handles_odbql_busy(monkeypatch):
     """Test that the close method handles ODBQL_BUSY."""
-    def mock_odbql_close(connection):  # pylint: disable=missing-docstring,unused-argument
+    def mock_odbql_close(connection):
+        """mock odbql_close"""
         return py3odb.odbql.ODBQL_BUSY
     monkeypatch.setattr("py3odb.odbql.odbql_close", mock_odbql_close)
     conn = py3odb.connect("")
@@ -42,7 +43,8 @@ def test_close_handles_odbql_busy(monkeypatch):
 
 def test_close_handles_odbql_error(monkeypatch):
     """Test that the close method handles ODBQL_ERROR."""
-    def mock_odbql_close(connection):  # pylint: disable=missing-docstring,unused-argument
+    def mock_odbql_close(connection):
+        """mock odbql_close"""
         return py3odb.odbql.ODBQL_ERROR
     monkeypatch.setattr("py3odb.odbql.odbql_close", mock_odbql_close)
     conn = py3odb.connect("")
