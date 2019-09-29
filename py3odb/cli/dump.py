@@ -1,5 +1,5 @@
 """Module for the dump command."""
-from py3odb import connect
+from py3odb import Reader
 from py3odb.cli import Command
 from py3odb.constants import ColumnType, Varno
 
@@ -7,6 +7,34 @@ from py3odb.constants import ColumnType, Varno
 class DumpCommand(Command):
     """The dump command."""
     help_text = "Dump information about the ODB2 file (e.g. column names)."
+
+    @property
+    def description(self):
+        """Describes the dump command."""
+        return DumpCommand.help_text
+
+    @staticmethod
+    def _get_column_data(filename):
+        """Retrieve a dictionary of column names and types."""
+        columns = {}
+        with Reader(filename, "SELECT * FROM <odb>") as odb_reader:
+            for column in odb_reader.description:
+                columns[column[0]] = ColumnType(column[1]).name
+        return columns
+
+    @staticmethod
+    def _get_varno_data(filename):
+        """Retrieve a sorted list of tuples containing varno, code, desc."""
+        varno_data = []
+        with Reader(filename, "SELECT DISTINCT varno@body FROM <odb>") as odb_reader:
+            for row in odb_reader:
+                varno = row["varno@body"]
+                code = Varno.get_code(varno)
+                desc = Varno.get_desc(code) if code != "unknown" else "unknown"
+                varno_data.append((varno, code, desc))
+        if varno_data:
+            varno_data.sort(key=lambda x: x[1])
+        return varno_data
 
     def add_arguments(self):
         super().add_arguments()
@@ -29,73 +57,42 @@ class DumpCommand(Command):
             action="store_true"
         )
 
-    @property
-    def description(self):
-        """Describes the dump command."""
-        return DumpCommand.help_text
-
     def command(self, args):
         """Run the dump command."""
-        main(args)
+        self.run(args)
 
-
-def print_columns(filename, verbose=False):
-    """Print the columns from an ODB2 file."""
-    conn = connect(filename)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM <odb>")
-    columns = {}
-    for column in cur.description:
-        columns[column[0]] = ColumnType(column[1]).name
-    if verbose:
-        print(f"{'name':40}type")
-        print("-" * 51)
-        for column_name in sorted(columns):
-            print(f"{column_name:40}{columns[column_name]}")
-    else:
-        print("name")
-        print("-" * 51)
-        for column_name in sorted(columns):
-            print(f"{column_name}")
-    conn.close()
-
-
-def _get_varno_data(filename):
-    """Retrieve a sorted list of tuples containing varno, code, desc."""
-    varno_data = []
-    conn = connect(filename)
-    cur = conn.cursor()
-    cur.execute("SELECT DISTINCT varno@body FROM <odb>")
-    for row in cur:
-        varno = row["varno@body"]
-        code = Varno.get_code(varno)
-        desc = Varno.get_desc(code) if code != "unknown" else "unknown"
-        varno_data.append((varno, code, desc))
-    conn.close()
-    if varno_data:
-        varno_data.sort(key=lambda x: x[1])
-    return varno_data
-
-
-def print_varnos(filename, verbose=False):
-    """Print a list of varnos from an ODB2 file."""
-    varno_data = _get_varno_data(filename)
-    if verbose:
-        print(f"{'code':19}varno description")
-        print("-" * 80)
-    else:
-        print(f"{'code':20}varno")
-        print("-" * 25)
-    for varno, code, desc in varno_data:
+    def print_columns(self, filename, verbose=False):
+        """Print the columns from an ODB2 file."""
+        columns = self._get_column_data(filename)
         if verbose:
-            print(f"{code:20}{varno:-4} {desc:55}")
+            print(f"{'name':40}type")
+            print("-" * 51)
+            for column_name in sorted(columns):
+                print(f"{column_name:40}{columns[column_name]}")
         else:
-            print(f"{code:20}{varno:-4}")
+            print("name")
+            print("-" * 51)
+            for column_name in sorted(columns):
+                print(f"{column_name}")
 
+    def print_varnos(self, filename, verbose=False):
+        """Print a list of varnos from an ODB2 file."""
+        varno_data = self._get_varno_data(filename)
+        if verbose:
+            print(f"{'code':19}varno description")
+            print("-" * 80)
+        else:
+            print(f"{'code':20}varno")
+            print("-" * 25)
+        for varno, code, desc in varno_data:
+            if verbose:
+                print(f"{code:20}{varno:-4} {desc:55}")
+            else:
+                print(f"{code:20}{varno:-4}")
 
-def main(args):
-    """Main function."""
-    if args.columns:
-        print_columns(args.filename, verbose=args.verbose)
-    if args.varno:
-        print_varnos(args.filename, verbose=args.verbose)
+    def run(self, args):
+        """Run the command."""
+        if args.columns:
+            self.print_columns(args.filename, verbose=args.verbose)
+        if args.varno:
+            self.print_varnos(args.filename, verbose=args.verbose)
