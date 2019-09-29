@@ -1,6 +1,6 @@
 """Module for the query command."""
 from py3odb import connect
-from py3odb.cli.command import Command
+from py3odb.cli import Command
 
 
 class QueryCommand(Command):

@@ -1,5 +1,5 @@
 """Module for the geopoints command."""
-from py3odb.cli.command import Command
+from py3odb.cli import Command
 
 
 class GeopointsCommand(Command):

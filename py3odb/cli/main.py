@@ -4,10 +4,7 @@
 from argparse import ArgumentParser
 
 from py3odb import __version__
-from py3odb.cli.command import Command
-import py3odb.cli.dump as dump
-import py3odb.cli.geopoints as geopoints
-import py3odb.cli.query as query
+from py3odb.cli import Command, DumpCommand, GeopointsCommand, QueryCommand
 
 
 class HelpCommand(Command):
@@ -24,9 +21,9 @@ class HelpCommand(Command):
 
 
 _COMMANDS = {
-    "dump": dump.DumpCommand,
-    "geopoints": geopoints.GeopointsCommand,
-    "query": query.QueryCommand,
+    "dump": DumpCommand,
+    "geopoints": GeopointsCommand,
+    "query": QueryCommand,
     "help": HelpCommand
 }
 

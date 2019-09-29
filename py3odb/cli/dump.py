@@ -1,6 +1,6 @@
 """Module for the dump command."""
 from py3odb import connect
-from py3odb.cli.command import Command
+from py3odb.cli import Command
 from py3odb.constants import ColumnType, Varno
 
 
