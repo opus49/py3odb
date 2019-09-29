@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Connection objects now have filename attribute
 * Cursor execution operations now support \<odb> tag in place of filename
 
-        cur.execute("SELECT DISTINCT varno FROM \<odb>")
+        cur.execute("SELECT DISTINCT varno FROM <odb>")
 
 * Constants submodule with ColumnType enum and Varno static class
 
