@@ -6,7 +6,7 @@ from py3odb.cli import Command
 class QueryCommand(Command):
     """The query command."""
     help_text = "Execute an SQL-like query against an ODB2 file."
-    desc = f"""
+    desc_text = f"""
 {help_text}
 You can replace the filename reference in the SQL command with <odb>.
 
@@ -28,7 +28,7 @@ Examples:
     @property
     def description(self):
         """Describes the query command."""
-        return QueryCommand.desc
+        return QueryCommand.desc_text
 
     def command(self, args):
         """Run the query command."""
