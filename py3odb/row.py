@@ -27,6 +27,9 @@ class Row(Mapping):
         return len(self.__dict__)
 
     def __repr__(self):
+        return f"Row({repr(dict(self.__dict__))})"
+
+    def __str__(self):
         return str(tuple(self.__dict__.values()))
 
     def keys(self):
