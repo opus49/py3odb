@@ -37,6 +37,7 @@ jobs:
             . venv/bin/activate
             pytest --flake8 --cov=py3odb --cov-report html:htmlcov/unit.html tests/unit
             pytest --flake8 --cov=py3odb --cov-report html:htmlcov/integration.html tests/integration
+            pytest --flake8 --cov=py3odb
             codecov 
 
       - store_artifacts:
