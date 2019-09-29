@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 * Cursor fetches now return Row objects
 * Cursor metadata now stores column type as ColumnType 
+* Split code coverage reports into unit/integration
 
 ### Fixed
 * Suppress (by default) STDOUT messages coming from odbql
