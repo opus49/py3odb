@@ -1,4 +1,5 @@
 """Module for the dump command."""
+from collections import OrderedDict
 from py3odb import Reader
 from py3odb.cli import Command
 from py3odb.constants import ColumnType, Varno
@@ -16,7 +17,7 @@ class DumpCommand(Command):
     @staticmethod
     def _get_column_data(filename):
         """Retrieve a dictionary of column names and types."""
-        columns = {}
+        columns = OrderedDict()
         with Reader(filename, "SELECT * FROM <odb>") as odb_reader:
             for column in odb_reader.description:
                 columns[column[0]] = ColumnType(column[1]).name
@@ -59,7 +60,10 @@ class DumpCommand(Command):
 
     def command(self, args):
         """Run the dump command."""
-        self.run(args)
+        if args.columns:
+            self.print_columns(args.filename, verbose=args.verbose)
+        if args.varno:
+            self.print_varnos(args.filename, verbose=args.verbose)
 
     def print_columns(self, filename, verbose=False):
         """Print the columns from an ODB2 file."""
@@ -93,10 +97,3 @@ class DumpCommand(Command):
                 print(f"{code:20}{varno:-4}  {desc}")
             else:
                 print(f"{code:20}{varno:-4}")
-
-    def run(self, args):
-        """Run the command."""
-        if args.columns:
-            self.print_columns(args.filename, verbose=args.verbose)
-        if args.varno:
-            self.print_varnos(args.filename, verbose=args.verbose)
