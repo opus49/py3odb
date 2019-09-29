@@ -39,7 +39,14 @@ jobs:
             . venv/bin/activate
             pytest --flake8 --cov=py3odb --cov-report xml:xmlcov/unit.xml tests/unit
             pytest --flake8 --cov=py3odb --cov-report xml:xmlcov/integration.xml tests/integration
-            codecov
+
+      - codecov/upload:
+          file: xmlcov/unit.xml
+          flags: unittests
+
+      - codecov/upload:
+          file: xmlcov/integration.xml
+          flags: integration
 
       - store_artifacts:
           path: xmlcov
