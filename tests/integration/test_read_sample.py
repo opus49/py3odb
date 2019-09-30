@@ -1,14 +1,12 @@
 """Integration test for INSERT and SELECT."""
-import pathlib
 from ..context import py3odb
 
 
-def test_read_sample():
+def test_read_sample(sample_odb):
     """Read a sample database."""
-    db_file = pathlib.Path(__file__).parent.parent.parent / "resources" / "sample.odb"
-    conn = py3odb.connect(f"{db_file}")
+    conn = py3odb.connect(sample_odb)
     cur = conn.cursor()
-    cur.execute(f"SELECT DISTINCT varno@body FROM '{db_file}'")
+    cur.execute(f"SELECT DISTINCT varno@body FROM '{sample_odb}'")
     varnos = cur.fetchall()
     assert len(varnos) == 3
     assert varnos[0][0] == 162
@@ -17,12 +15,11 @@ def test_read_sample():
     conn.close()
 
 
-def test_fetchmany():
+def test_fetchmany(sample_odb):
     """Read a database using fetchmany."""
-    db_file = pathlib.Path(__file__).parent.parent.parent / "resources" / "sample.odb"
-    conn = py3odb.connect(f"{db_file}")
+    conn = py3odb.connect(sample_odb)
     cur = conn.cursor()
-    cur.execute(f"SELECT DISTINCT varno@body FROM '{db_file}';")
+    cur.execute(f"SELECT DISTINCT varno@body FROM <odb>;")
     rows = cur.fetchmany(4)
     conn.close()
     assert len(rows) == 3

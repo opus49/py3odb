@@ -1,12 +1,10 @@
 """Integration test for Row object."""
-import pathlib
 from ..context import py3odb
 
 
-def test_row():
+def test_row(sample_odb):
     """Test the iteration capability of the Row object on real data."""
-    db_file = pathlib.Path(__file__).parent.parent.parent / "resources" / "sample.odb"
-    with py3odb.Reader(str(db_file), "SELECT varno,lat,lon,obsvalue FROM <odb>") as odb_reader:
+    with py3odb.Reader(sample_odb, "SELECT varno,lat,lon,obsvalue FROM <odb>") as odb_reader:
         for row in odb_reader:
             assert len(row) == 4
             assert repr(row) == \
