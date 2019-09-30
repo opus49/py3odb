@@ -32,11 +32,6 @@ Examples:
 
     def command(self, args):
         """Run the query command."""
-        main(args)
-
-
-def main(args):
-    """The main function for this script."""
-    with Reader(args.filename, args.sql_command) as odb_reader:
-        for row in odb_reader:
-            print(row)
+        with Reader(args.filename, args.sql_command) as odb_reader:
+            for row in odb_reader:
+                print(row)
