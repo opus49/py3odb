@@ -16,11 +16,13 @@ class Reader:  # pylint: disable=too-few-public-methods
         self._sql_command = sql_command
         self._connection = None
         self._cursor = None
+        self._description = None
 
     def __enter__(self):
         self._connection = py3odb.connect(self._filename)
         self._cursor = self._connection.cursor()
         self._cursor.execute(self._sql_command)
+        self._description = self._cursor.description
         return self
 
     def __exit__(self, *args):
@@ -38,6 +40,4 @@ class Reader:  # pylint: disable=too-few-public-methods
     @property
     def description(self):
         """Returns the cursor description if available, otherwise None."""
-        if self._cursor is not None:
-            return self._cursor.description
-        return None
+        return self._description
