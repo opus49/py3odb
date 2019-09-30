@@ -26,6 +26,10 @@ MOCK_CURSOR_DATA = {
             py3odb.row.Row({"varno@body": 2}),
             py3odb.row.Row({"varno@body": 3})
         )
+    },
+    "empty": {
+        "description": (),
+        "rows": ()
     }
 }
 
@@ -75,6 +79,16 @@ def mock_reader_select_all_fixture(monkeypatch):
     def mock_reader(*args):
         """mock reader function"""
         return MockReader("SELECT * FROM <odb>")
+    monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
+    monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
+
+
+@pytest.fixture(name="mock_reader_empty")
+def mock_reader_empty_fixture(monkeypatch):
+    """Fixture for mocking a Reader object that returns no data."""
+    def mock_reader(*args):
+        """mock reader function"""
+        return MockReader("empty")
     monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
     monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
 

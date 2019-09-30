@@ -84,16 +84,19 @@ class DumpCommand(Command):
     def print_varnos(self, filename, verbose=False):
         """Print a list of varnos from an ODB2 file."""
         varno_data = self._get_varno_data(filename)
-        if verbose:
-            print("-" * 80)
-            print(f"{'code':19}varno  description")
-            print("-" * 80)
-        else:
-            print("-" * 25)
-            print(f"{'code':20}varno")
-            print("-" * 25)
-        for varno, code, desc in varno_data:
+        if varno_data:
             if verbose:
-                print(f"{code:20}{varno:-4}  {desc}")
+                print("-" * 80)
+                print(f"{'code':19}varno  description")
+                print("-" * 80)
             else:
-                print(f"{code:20}{varno:-4}")
+                print("-" * 25)
+                print(f"{'code':20}varno")
+                print("-" * 25)
+            for varno, code, desc in varno_data:
+                if verbose:
+                    print(f"{code:20}{varno:-4}  {desc}")
+                else:
+                    print(f"{code:20}{varno:-4}")
+        else:
+            print(f"No varno's found in {filename}.")

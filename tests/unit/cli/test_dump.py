@@ -33,7 +33,7 @@ def test_prints_columns(mock_reader_select_all, dump_command, capsys):
 
 
 def test_prints_columns_verbose(mock_reader_select_all, dump_command, capsys):
-    """Test the results of the print_columns method."""
+    """Test the results of the print_columns method with verbosity."""
     dump_command.command(Namespace(filename="foo", columns=True, varno=False, verbose=True))
     lines = capsys.readouterr().out.splitlines()
     assert len(lines) == 7
@@ -55,10 +55,17 @@ def test_print_varnos(mock_reader_distinct_varno, dump_command, capsys):
 
 
 def test_print_varnos_verbose(mock_reader_distinct_varno, dump_command, capsys):
-    """Test the results of the print_varnos method."""
+    """Test the results of the print_varnos method with verbosity."""
     dump_command.command(Namespace(filename="foo", columns=False, varno=True, verbose=True))
     lines = capsys.readouterr().out.splitlines()
     assert len(lines) == 6
     assert "upper air temperature" in lines[3]
     assert "upper air u component" in lines[4]
     assert "geopotential" in lines[5]
+
+
+def test_print_varnos_empty(mock_reader_empty, dump_command, capsys):
+    """Test the results of the print_varnos method with no results."""
+    dump_command.command(Namespace(filename="foo", columns=False, varno=True, verbose=False))
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) == 1
