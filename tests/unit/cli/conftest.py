@@ -66,6 +66,7 @@ def mock_reader_distinct_varno_fixture(monkeypatch):
         """mock reader function"""
         return MockReader("SELECT DISTINCT varno@body FROM <odb>")
     monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
+    monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_reader_select_all")
@@ -75,6 +76,7 @@ def mock_reader_select_all_fixture(monkeypatch):
         """mock reader function"""
         return MockReader("SELECT * FROM <odb>")
     monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
+    monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_subparsers")
