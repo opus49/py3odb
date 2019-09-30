@@ -2,20 +2,20 @@
 from ...context import py3odb
 
 
-def test_get_code():
+def test_get_name():
     """Test the get code method."""
-    assert py3odb.constants.Varno.get_code(215) == "1dvar"
-    assert py3odb.constants.Varno.get_code(108) == "pmsl"
-    assert py3odb.constants.Varno.get_code(61) == "ww"
-    assert py3odb.constants.Varno.get_code(-1) == "unknown"
+    assert py3odb.constants.Varno.get_name(215) == "1dvar"
+    assert py3odb.constants.Varno.get_name(108) == "pmsl"
+    assert py3odb.constants.Varno.get_name(61) == "ww"
+    assert py3odb.constants.Varno.get_name(-1) == "unknown"
 
 
-def test_get_varno():
-    """Test the get_varno method."""
-    assert py3odb.constants.Varno.get_varno("aerod") == 174
-    assert py3odb.constants.Varno.get_varno("rh") == 29
-    assert py3odb.constants.Varno.get_varno("soilm") == 180
-    assert py3odb.constants.Varno.get_varno("foo") == "unknown"
+def test_get_code():
+    """Test the get_code method."""
+    assert py3odb.constants.Varno.get_code("aerod") == 174
+    assert py3odb.constants.Varno.get_code("rh") == 29
+    assert py3odb.constants.Varno.get_code("soilm") == 180
+    assert py3odb.constants.Varno.get_code("foo") == "unknown"
 
 
 def test_get_desc():

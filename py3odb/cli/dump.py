@@ -30,9 +30,9 @@ class DumpCommand(Command):
         with Reader(filename, "SELECT DISTINCT varno@body FROM <odb>") as odb_reader:
             for row in odb_reader:
                 varno = row["varno@body"]
-                code = Varno.get_code(varno)
-                desc = Varno.get_desc(code) if code != "unknown" else "unknown"
-                varno_data.append((varno, code, desc))
+                name = Varno.get_name(varno)
+                desc = Varno.get_desc(name) if name != "unknown" else "unknown"
+                varno_data.append((varno, name, desc))
         if varno_data:
             varno_data.sort(key=lambda x: x[1])
         return varno_data
@@ -40,19 +40,19 @@ class DumpCommand(Command):
     def add_arguments(self):
         super().add_arguments()
         self.parser.add_argument(
-            "-C",
+            "-c",
             "--columns",
             help="Print the columns.",
             action="store_true"
         )
         self.parser.add_argument(
-            "-V",
+            "-v",
             "--varno",
             help="Print the varnos.",
             action="store_true"
         )
         self.parser.add_argument(
-            "-v",
+            "-vv",
             "--verbose",
             help="Print full details.",
             action="store_true"
