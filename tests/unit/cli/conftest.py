@@ -1,6 +1,7 @@
 """Used to share fixtures among tests."""
 import pytest
 from ...context import py3odb
+from ...context import main
 
 
 MOCK_CURSOR_DATA = {
@@ -124,3 +125,22 @@ def mock_subparsers_fixture():
                 self.defaults[keyname] = value
 
     return MockSubparsers()
+
+
+@pytest.fixture(name="usage")
+def usage_fixture(capsys):
+    """Get the usage output from main."""
+    main.usage()
+    return capsys.readouterr().out.splitlines()
+
+
+@pytest.fixture(name="dump_command")
+def dump_command_fixture(mock_subparsers):
+    """Get a DumpCommand object."""
+    return py3odb.cli.dump.DumpCommand(mock_subparsers)
+
+
+@pytest.fixture(name="query_command")
+def query_command_fixture(mock_subparsers):
+    """Get a QueryCommand object."""
+    return py3odb.cli.query.QueryCommand(mock_subparsers)

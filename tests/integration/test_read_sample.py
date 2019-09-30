@@ -22,7 +22,7 @@ def test_fetchmany():
     db_file = pathlib.Path(__file__).parent.parent.parent / "resources" / "sample.odb"
     conn = py3odb.connect(f"{db_file}")
     cur = conn.cursor()
-    cur.execute(f"SELECT DISTINCT varno@body FROM '{db_file}'")
+    cur.execute(f"SELECT DISTINCT varno@body FROM '{db_file}';")
     rows = cur.fetchmany(4)
     conn.close()
     assert len(rows) == 3

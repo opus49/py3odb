@@ -1,13 +1,6 @@
 """Tests for cli/dump module."""
 from argparse import Namespace
-import pytest
 from ...context import py3odb
-
-
-@pytest.fixture(name="dump_command")
-def dump_command_fixture(mock_subparsers):
-    """Get a DumpCommand object."""
-    return py3odb.cli.dump.DumpCommand(mock_subparsers)
 
 
 def test_dump_command(dump_command):
