@@ -1,6 +1,6 @@
 """Module for the dump command."""
 from collections import OrderedDict
-from py3odb import Reader
+from py3odb import InterfaceError, ProgrammingError, Reader
 from py3odb.cli import Command
 from py3odb.constants import ColumnType, Varno
 
@@ -60,10 +60,15 @@ class DumpCommand(Command):
 
     def command(self, args):
         """Run the dump command."""
-        if args.columns:
-            self.print_columns(args.filename, verbose=args.verbose)
-        if args.varno:
-            self.print_varnos(args.filename, verbose=args.verbose)
+        try:
+            if args.columns:
+                self.print_columns(args.filename, verbose=args.verbose)
+            if args.varno:
+                self.print_varnos(args.filename, verbose=args.verbose)
+        except InterfaceError as err:
+            print(f"Dump interface error: {err}")
+        except ProgrammingError:
+            print(f"Dump error: {args.filename} does not appear to be a valid ODB file.")
 
     def print_columns(self, filename, verbose=False):
         """Print the columns from an ODB2 file."""
