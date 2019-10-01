@@ -10,10 +10,12 @@ from .error import (
     Error, InterfaceError, DatabaseError, InternalError, OperationalError,
     ProgrammingError, IntegrityError, DataError, NotSupportedError
 )
+from .reader import Reader
 
 __all__ = [
     'connect',
     'Connection',
+    'Reader',
     'Error',
     'InterfaceError',
     'DatabaseError',

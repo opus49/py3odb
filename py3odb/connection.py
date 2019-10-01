@@ -8,29 +8,30 @@ from .cursor import Cursor
 from .error import InterfaceError, OperationalError, NotSupportedError
 
 
-def connect(parameters):
+def connect(filename):
     """
     Constructor for creating a connection to the database.
     Returns a Connection object.
     """
-    return Connection(parameters)
+    return Connection(filename)
 
 
 class Connection:
     """A connection to the database"""
-    def __init__(self, dsn):
-        self._database = self._open(dsn)
+    def __init__(self, filename):
+        self._database = self._open(filename)
+        self._filename = filename
         self._connected = True
         self._cursors = []
 
     @staticmethod
-    def _open(dsn):
+    def _open(filename):
         """Opens a connection to a database and returns an odbql object."""
         database = ctypes.c_void_p()
-        retcode = odbql.odbql_open(dsn.encode("UTF-8"), ctypes.byref(database))
+        retcode = odbql.odbql_open(filename.encode("UTF-8"), ctypes.byref(database))
         if retcode == odbql.ODBQL_OK:
             return database
-        raise InterfaceError(f"Cannot connect to dsn: {dsn}")
+        raise InterfaceError(f"Cannot connect to filename: {filename}")
 
     @property
     def is_connected(self):
@@ -58,6 +59,11 @@ class Connection:
     def database(self):
         """Reference to the underlying odbql database object."""
         return self._database
+
+    @property
+    def filename(self):
+        """The filename representing the connected database."""
+        return self._filename
 
     @staticmethod
     def rollback():

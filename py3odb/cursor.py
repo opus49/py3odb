@@ -4,7 +4,9 @@ import ctypes
 from warnings import warn
 
 import py3odb.odbql as odbql
+from .constants import ColumnType
 from .error import OperationalError, ProgrammingError, NotSupportedError
+from .row import Row
 
 
 class Cursor:
@@ -64,11 +66,11 @@ class Cursor:
         odbql.odbql_step(self._stmt)
 
     @staticmethod
-    def _column_info(name, type_):
+    def _column_info(name, column_type):
         """
         Shorthand method for filling out the 7-item description tuples.
         """
-        return (name, type_, None, None, None, None, True)
+        return (name, column_type, None, None, None, None, True)
 
     def _get_column(self, index):
         """
@@ -77,11 +79,11 @@ class Cursor:
         raw_value = odbql.odbql_column_value(self._stmt, index)
         if not raw_value:
             return None
-        if self._metadata["types"][index] == odbql.ODBQL_FLOAT:
+        if self._metadata["types"][index] == ColumnType.FLOAT:
             return odbql.odbql_value_double(raw_value)
-        elif self._metadata["types"][index] == odbql.ODBQL_INTEGER:
+        elif self._metadata["types"][index] == ColumnType.INTEGER:
             return odbql.odbql_value_int(raw_value)
-        elif self._metadata["types"][index] == odbql.ODBQL_BITFIELD:
+        elif self._metadata["types"][index] == ColumnType.BITFIELD:
             return odbql.odbql_value_int(raw_value)
         return odbql.odbql_column_text(self._stmt, index).decode("UTF-8").strip()
 
@@ -98,13 +100,17 @@ class Cursor:
         )
         self._metadata["types"] = tuple(
             [
-                odbql.odbql_column_type(self._stmt, index)
+                ColumnType(odbql.odbql_column_type(self._stmt, index))
                 for index in range(self._metadata["count"])
             ]
         )
         if self._metadata["names"] and self._metadata["types"]:
             self._metadata["description"] = tuple(
-                map(self._column_info, self._metadata["names"], self._metadata["types"])
+                map(
+                    self._column_info,
+                    self._metadata["names"],
+                    [x.value for x in self._metadata["types"]]
+                )
             )
         else:
             self._metadata["description"] = None
@@ -117,6 +123,7 @@ class Cursor:
             raise OperationalError("The database is not connected.")
         if self._closed:
             raise OperationalError("The cursor is closed.")
+        operation = operation.replace("<odb>", f"'{self._connection.filename}'")
         if not operation.endswith(';'):
             operation += ';'
         if self._stmt is not None:
@@ -202,14 +209,20 @@ class Cursor:
         Fetch the next row of a query result set, returning a single sequence,
         or None when no more data is available.  A ProgrammingError is raised
         if the previous call to execute did not produce any result set or no
-        call was issued yet.
+        call was issued yet.  For py3odb, the fetch returns a Row object.
         """
         if self._stmt is None:
             raise ProgrammingError("You must execute a statement first.")
         retcode = odbql.odbql_step(self._stmt)
         if retcode not in (odbql.ODBQL_ROW, odbql.ODBQL_METADATA_CHANGED):
             return None
-        return tuple([self._get_column(index) for index in range(self._metadata["count"])])
+        row = Row(
+            {
+                self._metadata["names"][index]: self._get_column(index)
+                for index in range(self._metadata["count"])
+            }
+        )
+        return row
 
     def fetchmany(self, size=None):
         """
@@ -222,7 +235,7 @@ class Cursor:
         rows = []
         for _ in range(size):
             row = self.fetchone()
-            if row:  # both not empty and not None
+            if row is not None:
                 rows.append(row)
             else:
                 break
