@@ -1,5 +1,5 @@
 """Module for the query command."""
-from py3odb import Reader
+from py3odb import InterfaceError, ProgrammingError, Reader
 from py3odb.cli import Command
 
 
@@ -32,6 +32,14 @@ Examples:
 
     def command(self, args):
         """Run the query command."""
-        with Reader(args.filename, args.sql_command) as odb_reader:
-            for row in odb_reader:
-                print(row)
+        try:
+            with Reader(args.filename, args.sql_command) as odb_reader:
+                for row in odb_reader:
+                    print(row)
+        except InterfaceError as err:
+            print(f"Query interface error: {err}")
+        except ProgrammingError as err:
+            if "Assertion failed" in str(err):
+                print(f"Query error: {args.filename} does not appear to be a valid ODB2 file.")
+            else:
+                print(f"Query error: {err}")
