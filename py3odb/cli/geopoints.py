@@ -1,6 +1,6 @@
 """Module for the geopoints command."""
 import sys
-from py3odb import Reader
+from py3odb import InterfaceError, ProgrammingError, Reader
 from py3odb.cli import Command
 from py3odb.constants import Varno
 
@@ -44,10 +44,16 @@ See https://apps.ecmwf.int/odbgov/varno/
 
     def command(self, args):
         """Run the geopoints command."""
-        gp_manager = GeopointsRunner(args.filename, args.varno, args.column)
-        results = gp_manager.run()
-        for line in results:
-            print(line)
+        try:
+            gp_manager = GeopointsRunner(args.filename, args.varno, args.column)
+            results = gp_manager.run()
+            for line in results:
+                print(line)
+        except InterfaceError as err:
+            print(f"Geopoints error: {err}")
+        except ProgrammingError:
+            print(f"Geopoints error: {args.filename} does not appear to be "
+                  "a valid ODB2 file.", file=sys.stderr)
 
 
 class GeopointsRunner:
