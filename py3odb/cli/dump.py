@@ -25,14 +25,14 @@ class DumpCommand(Command):
 
     @staticmethod
     def _get_varno_data(filename):
-        """Retrieve a sorted list of tuples containing varno, code, desc."""
+        """Retrieve a sorted list of tuples containing varno code, name, desc."""
         varno_data = []
         with Reader(filename, "SELECT DISTINCT varno@body FROM <odb>") as odb_reader:
             for row in odb_reader:
-                varno = row["varno@body"]
-                name = Varno.get_name(varno)
+                code = row["varno@body"]
+                name = Varno.get_name(code)
                 desc = Varno.get_desc(name) if name != "unknown" else "unknown"
-                varno_data.append((varno, name, desc))
+                varno_data.append((code, name, desc))
         if varno_data:
             varno_data.sort(key=lambda x: x[1])
         return varno_data
@@ -92,16 +92,16 @@ class DumpCommand(Command):
         if varno_data:
             if verbose:
                 print("-" * 80)
-                print(f"{'code':19}varno  description")
+                print(f"{'name':20}code  description")
                 print("-" * 80)
             else:
                 print("-" * 25)
-                print(f"{'code':20}varno")
+                print(f"{'name':20}code")
                 print("-" * 25)
-            for varno, code, desc in varno_data:
+            for code, name, desc in varno_data:
                 if verbose:
-                    print(f"{code:20}{varno:-4}  {desc}")
+                    print(f"{name:20}{code:-4}  {desc}")
                 else:
-                    print(f"{code:20}{varno:-4}")
+                    print(f"{name:20}{code:-4}")
         else:
             print(f"No varno's found in {filename}.")
