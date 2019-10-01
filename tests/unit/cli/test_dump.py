@@ -30,8 +30,10 @@ def test_prints_columns_verbose(mock_reader_select_all, dump_command, capsys):
     dump_command.command(Namespace(filename="foo", columns=True, varno=False, verbose=True))
     lines = capsys.readouterr().out.splitlines()
     assert len(lines) == 7
-    for index in range(3, 7):
-        assert lines[index].endswith("INTEGER")
+    assert lines[3].endswith("FLOAT")
+    assert lines[4].endswith("FLOAT")
+    assert lines[5].endswith("FLOAT")
+    assert lines[6].endswith("INTEGER")
 
 
 def test_print_varnos(mock_reader_distinct_varno, dump_command, capsys):

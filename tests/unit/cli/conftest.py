@@ -7,15 +7,21 @@ from ...context import main
 MOCK_CURSOR_DATA = {
     "SELECT * FROM <odb>": {
         "description": (
-            ('lat@hdr', 1, None, None, None, None, None),
-            ('lon@hdr', 1, None, None, None, None, None),
+            ('lat@hdr', 2, None, None, None, None, None),
+            ('lon@hdr', 2, None, None, None, None, None),
             ('varno@body', 1, None, None, None, None, None),
-            ('obsvalue@body', 1, None, None, None, None, None)
+            ('obsvalue@body', 2, None, None, None, None, None)
         ),
         "rows": (
-            py3odb.row.Row({"lat": 23.1, "lon": 120.3, "varno": 1, "obsvalue": 3.2}),
-            py3odb.row.Row({"lat": -13.2, "lon": -10.3, "varno": 2, "obsvalue": 7.8}),
-            py3odb.row.Row({"lat": 3.8, "lon": 40.2, "varno": 3, "obsvalue": -1.2})
+            py3odb.row.Row(
+                {"lat@hdr": 23.1, "lon@hdr": 120.3, "varno@body": 1, "obsvalue": 3.2}
+            ),
+            py3odb.row.Row(
+                {"lat@hdr": -13.2, "lon@hdr": -10.3, "varno@body": 2, "obsvalue": 7.8}
+            ),
+            py3odb.row.Row(
+                {"lat@hdr": 3.8, "lon@hdr": 40.2, "varno@body": 3, "obsvalue": -1.2}
+            )
         )
     },
     "SELECT DISTINCT varno@body FROM <odb>": {
@@ -71,7 +77,6 @@ def mock_reader_distinct_varno_fixture(monkeypatch):
         """mock reader function"""
         return MockReader("SELECT DISTINCT varno@body FROM <odb>")
     monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
-    monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_reader_select_all")
@@ -91,7 +96,6 @@ def mock_reader_empty_fixture(monkeypatch):
         """mock reader function"""
         return MockReader("empty")
     monkeypatch.setattr(py3odb.cli.dump, 'Reader', mock_reader)
-    monkeypatch.setattr(py3odb.cli.query, 'Reader', mock_reader)
 
 
 @pytest.fixture(name="mock_subparsers")
@@ -144,3 +148,9 @@ def dump_command_fixture(mock_subparsers):
 def query_command_fixture(mock_subparsers):
     """Get a QueryCommand object."""
     return py3odb.cli.query.QueryCommand(mock_subparsers)
+
+
+@pytest.fixture(name="geopoints_command")
+def geopoints_command_fixture(mock_subparsers):
+    """Get a GeopointsCommand object."""
+    return py3odb.cli.geopoints.GeopointsCommand(mock_subparsers)
