@@ -1,5 +1,6 @@
 """Tests for cli/dump module."""
 from argparse import Namespace
+import pytest
 from ...context import py3odb
 
 
@@ -64,3 +65,23 @@ def test_print_varnos_empty(mock_reader_empty, dump_command, capsys):
     dump_command.command(Namespace(filename="foo", columns=False, varno=True, verbose=False))
     lines = capsys.readouterr().out.splitlines()
     assert len(lines) == 1
+
+
+def test_dump_handles_missing_file(dump_command):
+    """Test that the dump command handles non-ODB2 files."""
+    try:
+        dump_command.command(
+            Namespace(filename="doesnotexist.odb", columns=False, varno=True, verbose=False)
+        )
+    except py3odb.Error:
+        pytest.fail("Failed to handle interface error.")
+
+
+def test_dump_handles_invalid_file(dump_command):
+    """Test that the dump command handles non-ODB2 files."""
+    try:
+        dump_command.command(
+            Namespace(filename=f"{__file__}", columns=False, varno=True, verbose=False)
+        )
+    except py3odb.Error:
+        pytest.fail("Failed to handle programming error.")
