@@ -10,14 +10,15 @@ from .error import InterfaceError, OperationalError, NotSupportedError
 
 def connect(filename):
     """
-    Constructor for creating a connection to the database.
-    Returns a Connection object.
+    Creates a connection to the database.
     """
     return Connection(filename)
 
 
 class Connection:
-    """A connection to the database"""
+    """
+    A connection to the database.
+    """
     def __init__(self, filename):
         self._database = self._open(filename)
         self._filename = filename
@@ -34,9 +35,19 @@ class Connection:
         raise InterfaceError(f"Cannot connect to filename: {filename}")
 
     @property
+    def database(self):
+        """Reference to the underlying odbql database object."""
+        return self._database
+
+    @property
     def is_connected(self):
         """Read-only attribute for the the connection status."""
         return self._connected
+
+    @property
+    def filename(self):
+        """The filename representing the connected database."""
+        return self._filename
 
     def close(self):
         """Close the connection now."""
@@ -54,16 +65,6 @@ class Connection:
     def commit():
         """Commit any pending transaction to the database."""
         raise NotSupportedError("py3odb does not support transactions.")
-
-    @property
-    def database(self):
-        """Reference to the underlying odbql database object."""
-        return self._database
-
-    @property
-    def filename(self):
-        """The filename representing the connected database."""
-        return self._filename
 
     @staticmethod
     def rollback():
