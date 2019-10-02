@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-with open("README.md") as fh_in:
+with open("README.rst") as fh_in:
     README = fh_in.read()
 
 setup(
@@ -8,7 +8,6 @@ setup(
     version="0.1.1",
     description="Python 3.6+ compatible interface to ECMWF's ODB API",
     long_description=README,
-    long_description_content_type="text/markdown",
     url="https://github.com/opus49/py3odb",
     author="Mike Puskar",
     author_email="puskar49@gmail.com",
