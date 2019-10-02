@@ -26,5 +26,8 @@ setup(
         "console_scripts": [
             "py3odb = py3odb.cli.main:main",
         ]
+    },
+    project_urls={
+        'Documentation': 'https://py3odb.readthedocs.io',
     }
 )

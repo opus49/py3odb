@@ -1,4 +1,4 @@
-|build| |codecov| |PyPI| |Python|
+|build| |codecov| |PyPI| |Python| |docs|
 
 py3odb
 ======
@@ -71,3 +71,5 @@ References
    :target: https://pypi.org/project/py3odb/
 .. |Python| image:: https://img.shields.io/pypi/pyversions/py3odb
    :target: https://www.python.org/downloads/release/python-360/
+.. |docs| image:: https://readthedocs.org/projects/py3odb/badge/?version=latest
+   :target: https://py3odb.readthedocs.io
