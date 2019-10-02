@@ -5,4 +5,3 @@
    :hidden:
 
    cli/index
-   autoapi/index
