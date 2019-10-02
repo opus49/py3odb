@@ -4,6 +4,7 @@ copyright = '2019, U.S. Federal Government (in countries where recognized)'
 author = 'Mike Puskar'
 release = "0.2"
 version = release
+master_doc = 'index'
 
 
 # -- General configuration ---------------------------------------------------
