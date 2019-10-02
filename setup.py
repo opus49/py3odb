@@ -8,7 +8,7 @@ setup(
     version="0.2",
     description="Python 3.6+ compatible interface to ECMWF's ODB API",
     long_description=README,
-    long_description_content_type="test/x-rst",
+    long_description_content_type="text/x-rst",
     url="https://github.com/opus49/py3odb",
     author="Mike Puskar",
     author_email="puskar49@gmail.com",
