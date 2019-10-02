@@ -2,7 +2,7 @@
 Python 3.6+ compatible interface to ECMWF's ODB API
 """
 
-__version__ = "0.1.1"
+__version__ = "0.2"
 
 
 from .connection import connect, Connection
@@ -10,10 +10,12 @@ from .error import (
     Error, InterfaceError, DatabaseError, InternalError, OperationalError,
     ProgrammingError, IntegrityError, DataError, NotSupportedError
 )
+from .reader import Reader
 
 __all__ = [
     'connect',
     'Connection',
+    'Reader',
     'Error',
     'InterfaceError',
     'DatabaseError',
