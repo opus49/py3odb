@@ -1,13 +1,8 @@
-import sys
-
-sys.path.insert(0, "../")
-import py3odb  # noqa: E402
-
 # -- Project information -----------------------------------------------------
 project = 'py3odb'
 copyright = '2019, U.S. Federal Government (in countries where recognized)'
 author = 'Mike Puskar'
-release = py3odb.__version__
+release = "0.2"
 version = release
 
 
