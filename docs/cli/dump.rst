@@ -1,8 +1,11 @@
+====
 Dump
 ====
 
 The dump command provides a way to view specific information about an ODB2 file from the command line.  It will provide ``columns`` or ``varno`` based on the switch:
 
+Usage
+-----
 .. code-block:: bash
 
     usage: py3odb dump [-h] [-c] [-v] [-vv] filename
@@ -19,7 +22,8 @@ The dump command provides a way to view specific information about an ODB2 file 
       -vv, --verbose  Print full details.
 
 
-Example usage:
+Examples
+--------
 
 .. code-block:: bash
 
