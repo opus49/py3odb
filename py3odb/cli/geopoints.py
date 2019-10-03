@@ -36,6 +36,12 @@ See https://apps.ecmwf.int/odbgov/varno/
             help="The varno to include.  May be either name or code.",
             required=True
         )
+        self.parser.add_argument(
+            "-w",
+            "--where",
+            help="Adds a conditional to the SQL query.",
+            type=str
+        )
 
     @property
     def description(self):
@@ -45,25 +51,29 @@ See https://apps.ecmwf.int/odbgov/varno/
     def command(self, args):
         """Run the geopoints command."""
         try:
-            gp_manager = GeopointsRunner(args.filename, args.varno, args.column)
+            gp_manager = GeopointsRunner(args.filename, args.varno, args.column, args.where)
             results = gp_manager.run()
             for line in results:
                 print(line)
         except InterfaceError as err:
             print(f"Geopoints error: {err}")
-        except ProgrammingError:
-            print(f"Geopoints error: {args.filename} does not appear to be "
-                  "a valid ODB2 file.", file=sys.stderr)
+        except ProgrammingError as err:
+            if "Assertion failed" in str(err):
+                print(f"Geopoints error: {args.filename} does not appear to be "
+                      "a valid ODB2 file.", file=sys.stderr)
+            else:
+                print(err)
 
 
 class GeopointsRunner:
     """Class for running geopoints file generation."""
-    def __init__(self, filename, varno, column):
+    def __init__(self, filename, varno, column, where=None):
         self.filename = filename
         self.varno = self._validate_varno(varno)
         self.column = self._validate_column(column)
         if self.column is None:
             self.error(f"\nCould not find column {column} in {self.filename}.")
+        self.where = where
 
     @staticmethod
     def error(message):
@@ -82,6 +92,8 @@ class GeopointsRunner:
         """Generate the SQL command from the varno and column."""
         sql_command = f"SELECT lat@hdr,lon@hdr,date@hdr,antime@desc,{self.column} "
         sql_command += f"FROM <odb> WHERE varno={self.varno}"
+        if self.where is not None:
+            sql_command += f" AND ({self.where})"
         return sql_command
 
     def run(self):

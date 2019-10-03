@@ -8,7 +8,7 @@ Usage
 -----
 .. code-block:: bash
 
-    usage: py3odb geopoints [-h] -c COLUMN -v VARNO filename
+    usage: py3odb geopoints [-h] -c COLUMN -v VARNO [-w WHERE] filename
 
     Generate a standard 6-column geopoints file for Metview.
     You must supply the filename, column, and varno.  You may use the
@@ -29,13 +29,15 @@ Usage
                             The column to include (e.g. obsvalue@body).
       -v VARNO, --varno VARNO
                             The varno to include.  May be either name or code.
+      -w WHERE, --where WHERE
+                            Adds a conditional to the SQL query.
 
 
-Example
--------
+Examples
+--------
 .. code-block:: bash
 
-    $ py3odb geopoints -c obsvalue -v t2m
+    $ py3odb geopoints sample.odb -c obsvalue -v t2m
     #GEO
     VARNO = 39
     COLUMN = obsvalue@body
@@ -46,6 +48,19 @@ Example
       57.733    10.633   0   20181213   0600    274.932434
       56.933     8.633   0   20181213   0600    273.601471
       57.383    10.333   0   20181213   0600    273.796997
+      ...
+
+
+.. code-block:: bash
+
+    $ py3odb geopoints sample.odb -c obsvalue -v t2m -w "lon > 9 AND lon < 10"
+    #GEO
+    VARNO = 39
+    COLUMN = obsvalue@body
+      lat       lon     lvl   date      time      value
+    #DATA
+      57.183     9.950   0   20181213   0600    272.671814
+      57.100     9.850   0   20181213   0600    273.486420
       ...
 
 

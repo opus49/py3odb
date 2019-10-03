@@ -5,7 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [0.2] - Unreleased
+## [0.3] - unreleased
+
+### Added
+* --where option added to geopoints command for conditionals.
+
+
+## [0.2] - 2019-10-01
 ### Added
 * Entry point py3odb with commands: dump, geopoints, and query.
 * Row objects (immutable dictionary-like, iterable sequences).
@@ -28,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 * Suppressed (by default) STDOUT messages coming from odbql.
+
 
 ## [0.1.1] - 2019-09-26
 
