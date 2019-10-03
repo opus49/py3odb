@@ -2,7 +2,7 @@
 project = 'py3odb'
 copyright = '2019, U.S. Federal Government (in countries where recognized)'
 author = 'Mike Puskar'
-release = "0.2"
+release = "0.3"
 version = release
 master_doc = 'index'
 
