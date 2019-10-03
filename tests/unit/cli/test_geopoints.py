@@ -19,7 +19,7 @@ def test_geopoints_handles_missing_file(geopoints_command):
     """Test that the geopoints command handles non-ODB2 files."""
     try:
         geopoints_command.command(
-            Namespace(filename="doesnotexist.odb", column="foo", varno=-1)
+            Namespace(filename="doesnotexist.odb", column="foo", varno=-1, where=None)
         )
     except py3odb.Error:
         pytest.fail("Failed to handle interface error.")
@@ -29,7 +29,7 @@ def test_geopoints_handles_invalid_file(geopoints_command):
     """Test that the geopoints command handles non-ODB2 files."""
     try:
         geopoints_command.command(
-            Namespace(filename=f"{__file__}", column="foo", varno=-1)
+            Namespace(filename=f"{__file__}", column="foo", varno=-1, where=None)
         )
     except py3odb.Error:
         pytest.fail("Failed to handle programming error.")

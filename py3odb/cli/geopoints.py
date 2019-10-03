@@ -36,6 +36,12 @@ See https://apps.ecmwf.int/odbgov/varno/
             help="The varno to include.  May be either name or code.",
             required=True
         )
+        self.parser.add_argument(
+            "-w",
+            "--where",
+            help="Adds a conditional to the SQL query.",
+            type=str
+        )
 
     @property
     def description(self):
@@ -45,25 +51,29 @@ See https://apps.ecmwf.int/odbgov/varno/
     def command(self, args):
         """Run the geopoints command."""
         try:
-            gp_manager = GeopointsRunner(args.filename, args.varno, args.column)
+            gp_manager = GeopointsRunner(args.filename, args.varno, args.column, args.where)
             results = gp_manager.run()
             for line in results:
                 print(line)
         except InterfaceError as err:
             print(f"Geopoints error: {err}")
-        except ProgrammingError:
-            print(f"Geopoints error: {args.filename} does not appear to be "
-                  "a valid ODB2 file.", file=sys.stderr)
+        except ProgrammingError as err:
+            if "Assertion failed" in str(err):
+                print(f"Geopoints error: {args.filename} does not appear to be "
+                      "a valid ODB2 file.", file=sys.stderr)
+            else:
+                print(err)
 
 
 class GeopointsRunner:
     """Class for running geopoints file generation."""
-    def __init__(self, filename, varno, column):
+    def __init__(self, filename, varno, column, where=None):
         self.filename = filename
         self.varno = self._validate_varno(varno)
         self.column = self._validate_column(column)
         if self.column is None:
             self.error(f"\nCould not find column {column} in {self.filename}.")
+        self.where = where
 
     @staticmethod
     def error(message):
@@ -74,27 +84,30 @@ class GeopointsRunner:
     def generate_header(self):
         """Generate the header for the geopoints file."""
         header = ["#GEO", f"VARNO = {self.varno}", f"COLUMN = {self.column}"]
-        header.append("  lat       lon     lvl   date      time      value")
+        header.append("  lat       lon             lvl    date      time      value")
         header.append("#DATA")
         return header
 
     def generate_sql_command(self):
         """Generate the SQL command from the varno and column."""
-        sql_command = f"SELECT lat@hdr,lon@hdr,date@hdr,antime@desc,{self.column} "
+        sql_command = "SELECT lat@hdr,lon@hdr,vertco_reference_1@body,"
+        sql_command += f"date@hdr,antime@desc,{self.column} "
         sql_command += f"FROM <odb> WHERE varno={self.varno}"
+        if self.where is not None:
+            sql_command += f" AND ({self.where})"
         return sql_command
 
     def run(self):
         """Query the database and return a list of lines in geopoints format."""
         results = self.generate_header()
         with Reader(self.filename, self.generate_sql_command()) as odb_reader:
-            if len(odb_reader.description) < 5:
-                self.error(f"Could not find varno {self.varno} in {self.filename}")
             for row in odb_reader:
                 if row[self.column] is None:
                     continue
+                level = row['vertco_reference_1@body']
                 line = f"{row['lat@hdr']:8.3f}  {row['lon@hdr']:8.3f}   "
-                line += f"0   {row['date@hdr']}   {self._parse_antime(row['antime@desc'])}  "
+                line += f"{float(level) if level is not None else 0:10.1f}   "
+                line += f"{row['date@hdr']}   {self._parse_antime(row['antime@desc'])}  "
                 line += f"{row[self.column]:12.6f}"
                 results.append(line)
         if len(results) < 6:
