@@ -1,7 +1,8 @@
 """Used to share fixtures among tests."""
+import pathlib
 import pytest
-from ...context import py3odb
-from ...context import main
+from .context import py3odb
+from .context import main
 
 
 MOCK_CURSOR_DATA = {
@@ -154,3 +155,9 @@ def query_command_fixture(mock_subparsers):
 def geopoints_command_fixture(mock_subparsers):
     """Get a GeopointsCommand object."""
     return py3odb.cli.geopoints.GeopointsCommand(mock_subparsers)
+
+
+@pytest.fixture(name="sample_odb")
+def sample_odb_fixture():
+    """Get the fully qualified path to the sample odb file."""
+    return str(pathlib.Path(__file__).parent.parent / "resources" / "sample.odb")
