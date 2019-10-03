@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [0.3] - unreleased
+## [0.3] - 2019-10-03
 
 ### Added
 * --where option added to geopoints command for conditionals.
