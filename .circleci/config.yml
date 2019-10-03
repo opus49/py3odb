@@ -35,11 +35,11 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest --flake8 --cov=py3odb --cov-report html:htmlcov/unit.html tests/unit
-            pytest --flake8 --cov=py3odb --cov-report html:htmlcov/integration.html tests/integration
-            pytest --flake8 --cov=py3odb
+            pytest --flake8 --cov=py3odb --junitxml=test-reports/junit.xml
             codecov 
 
+      - store_test_results:
+          path: test-reports
+
       - store_artifacts:
-          path: htmlcov
-          destination: test-reports
+          path: test-reports
