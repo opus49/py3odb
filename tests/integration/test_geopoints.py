@@ -27,7 +27,7 @@ def test_geopoints_handles_where_syntax_error(sample_odb, geopoints_command):
         geopoints_command.command(
             Namespace(filename=sample_odb, column="obsvalue", varno="162", where="foo >")
         )
-    except:  # noqa: E722
+    except:  # noqa: E722  # pylint: disable=bare-except
         pytest.fail("Did not handle WHERE syntax error.")
 
 
