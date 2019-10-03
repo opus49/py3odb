@@ -161,3 +161,9 @@ def geopoints_command_fixture(mock_subparsers):
 def sample_odb_fixture():
     """Get the fully qualified path to the sample odb file."""
     return str(pathlib.Path(__file__).parent.parent / "resources" / "sample.odb")
+
+
+@pytest.fixture(name="main_program")
+def main_program_fixture():
+    """Get the fully qualified path to the main program file."""
+    return str(pathlib.Path(__file__).parent.parent / "py3odb" / "cli" / "main.py")
