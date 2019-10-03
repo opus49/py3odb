@@ -1,7 +1,5 @@
 """Integration test for geopoints command."""
 from argparse import Namespace
-import sys
-from subprocess import run, PIPE
 import pytest
 
 
