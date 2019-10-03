@@ -84,13 +84,14 @@ class GeopointsRunner:
     def generate_header(self):
         """Generate the header for the geopoints file."""
         header = ["#GEO", f"VARNO = {self.varno}", f"COLUMN = {self.column}"]
-        header.append("  lat       lon     lvl   date      time      value")
+        header.append("  lat       lon             lvl    date      time      value")
         header.append("#DATA")
         return header
 
     def generate_sql_command(self):
         """Generate the SQL command from the varno and column."""
-        sql_command = f"SELECT lat@hdr,lon@hdr,date@hdr,antime@desc,{self.column} "
+        sql_command = "SELECT lat@hdr,lon@hdr,vertco_reference_1@body,"
+        sql_command += f"date@hdr,antime@desc,{self.column} "
         sql_command += f"FROM <odb> WHERE varno={self.varno}"
         if self.where is not None:
             sql_command += f" AND ({self.where})"
@@ -100,13 +101,13 @@ class GeopointsRunner:
         """Query the database and return a list of lines in geopoints format."""
         results = self.generate_header()
         with Reader(self.filename, self.generate_sql_command()) as odb_reader:
-            if len(odb_reader.description) < 5:
-                self.error(f"Could not find varno {self.varno} in {self.filename}")
             for row in odb_reader:
                 if row[self.column] is None:
                     continue
+                level = row['vertco_reference_1@body']
                 line = f"{row['lat@hdr']:8.3f}  {row['lon@hdr']:8.3f}   "
-                line += f"0   {row['date@hdr']}   {self._parse_antime(row['antime@desc'])}  "
+                line += f"{float(level) if level is not None else 0:10.1f}   "
+                line += f"{row['date@hdr']}   {self._parse_antime(row['antime@desc'])}  "
                 line += f"{row[self.column]:12.6f}"
                 results.append(line)
         if len(results) < 6:
